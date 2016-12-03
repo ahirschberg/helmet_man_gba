@@ -84,10 +84,9 @@ void initState(const enum GAME_STATE state) {
             setRunning(PLAYER_ENTITY, 0);
             setFacing(PLAYER_ENTITY->obj, 1);
 
-            scrollerDX = -7;
-            /* if (difficulty_inc < 3) scrollerDX = -7; */
-            /* else if (difficulty_inc < 5) scrollerDX = -8; */
-            /* else scrollerDX = -9; */
+            if (difficulty_inc < 3) scrollerDX = -7;
+            else if (difficulty_inc < 5) scrollerDX = -8;
+            else scrollerDX = -9;
 
             PLAYER_ENTITY->dx = -1 * scrollerDX;
             break;
@@ -226,8 +225,7 @@ void tickGame(const uint frame) {
                 if (--rnum <= 0) {
                     if (objs_length < 2) {
                         const int ran = qran_range(0, 4);
-                        (void) ran;
-                        switch(3) {
+                        switch(ran) {
                             case 0:
                                 addEntity(OBSTACLE_ROCK1_TID, SCREEN_WIDTH, GROUND_OFFSET, OBSTACLE_ROCK);
                                 break;
@@ -269,8 +267,12 @@ void tickGame(const uint frame) {
         case GAME_OVER:
             PLAYER_ENTITY->dx = 0;
             if ((frame & 3) == 0) {
-                if (game_over_anim_frame < 20) drawImageFW(50, 20, (game_over_anim_frame++) * 20, game_over);
-                else initState(GAME_OVER_NODRAW);
+                if (game_over_anim_frame < 20) {
+                    drawImageFW(50, 20, (game_over_anim_frame++) * 20, game_over);
+                } else {
+                    game_over_anim_frame = 0;
+                    initState(GAME_OVER_NODRAW);
+                }
             }
             break;
         default:
@@ -282,6 +284,7 @@ void tickGame(const uint frame) {
 INLINE void runner_checkPlayerCollisions() {
     const ubyte player_x = ENT_X(PLAYER_ENTITY);
     const ubyte player_y = groundDist(PLAYER_ENTITY);
+    const int player_width = attrs(PLAYER_ENTITY).width;
 
     int i = 1;
     while (i < objs_length) {
@@ -289,11 +292,10 @@ INLINE void runner_checkPlayerCollisions() {
 
         const ENTITY_ATTRS obstacle_attrs = attrs(allEntities + i);
         const byte fix_sprite_height_a_little = (allEntities[i].type == OBSTACLE_SHEET) ? 0 : 4;
-        if (player_y < obstacle_attrs.height - fix_sprite_height_a_little && player_x < ent_x 
-                + obstacle_attrs.width && player_x + attrs(PLAYER_ENTITY).width - 5 > ent_x) {
+        PUTI(obstacle_attrs.width - player_width);
+        if (player_y < obstacle_attrs.height - fix_sprite_height_a_little && player_x < ent_x + obstacle_attrs.width / 2 // why?? 
+                && player_x + player_width - 5 > ent_x) {
             gameOver();
-            PUTI(ent_x);
-            drawInt(30, 50, player_x, 3, BLACK);
         }
         if (ent_x + obstacle_attrs.width <= 0) {
             score++;
