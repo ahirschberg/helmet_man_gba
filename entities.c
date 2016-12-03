@@ -1,7 +1,7 @@
 #include "myLib.h"
 #include "random.h"
-#include "entities.h"
 #include "gfx_helper.h"
+#include "entities.h"
 #include "game.h"
 
 ENTITY allEntities[];

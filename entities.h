@@ -52,7 +52,7 @@
 #define DIR_LEFT            (-1)
 #define DIR_RIGHT           (1)
 
-#define ENT_X(_ent)         (BF_GET((_ent)->obj->attr1, ATTR1_X))
+#define ENT_X(_ent)         sext9(BF_GET((_ent)->obj->attr1, ATTR1_X))
 #define ENT_Y(_ent)         (BF_GET((_ent)->obj->attr0, ATTR0_Y))
 
 enum ENT_STATE {
@@ -158,13 +158,18 @@ INLINE void setStanding(ENTITY* e) {
 INLINE void setHurt(ENTITY* e, byte dir) {
     setEntityState(e, HURT);
     e->dx = dir * HURT_DX;
-    e->dy = HURT_DX;
+    e->dy = 2;
 }
 INLINE void setDead(ENTITY* e) {
     e->lastAnimatedTile = 0;
     e->isDead = TRUE;
     e->dx = 0;
     e->dy = 10;
+    // draw blood
+    const int x = ENT_X(e) + 8;
+    for (int i = 0; i < 10; i+=qran_range(1,4)) {
+        setPixel(GROUND_OFFSET, x + i, COLOR(0, 20, 0));
+    }
 }
 
 INLINE short groundDist(ENTITY* e) {
