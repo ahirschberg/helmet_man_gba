@@ -43,7 +43,7 @@ typedef struct OBJ_AFFINE
 #define ATTR2_PALBANK_MASK  0xF000
 #define ATTR2_PALBANK_SHIFT 0xC
 
-#define ATTR1_X_MASK        0x00FF
+#define ATTR1_X_MASK        0x01FF // This tricky 9 bits....
 #define ATTR1_X_SHIFT       0
 #define ATTR1_SIZE_MASK     0xC000
 #define ATTR1_SIZE_SHIFT    0xE
@@ -69,6 +69,12 @@ typedef struct OBJ_AFFINE
 #define SPRITE_SIZE_MD      1
 #define SPRITE_SIZE_LG      2
 #define SPRITE_SIZE_XL      3
+
+// hack to get x coordinate's signedness to work properly
+INLINE signed short sext9(unsigned short num) {
+    signed short ret = num << 7;
+    return ret >> 7;
+}
 
 // bit field set and get routines
 #define BF_PREP(x, name)         ( ((x)<<name##_SHIFT)& name##_MASK  )
