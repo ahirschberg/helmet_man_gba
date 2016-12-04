@@ -1,0 +1,9 @@
+# cool_game_gba
+I initially made this for a CS2110 homework project, but I've continued to update the game with additional features I didn't have time to implement in the week and a half I was given on the homework.
+
+The game uses GBA mode 3, which provides bitmapped backgrounds and a sprite object block. The enemies, projectile, player, and runner obstacles are sprites, while the background graphic, ground, and text are done via drawing pixels to the screen.
+
+![Start screen](http://i.imgur.com/BAm4onC.png)
+
+#### Running on actual hardware via a flashcart!
+<img src="https://lh3.googleusercontent.com/e5oYCnQQTedsPBRn8zoXwi13GjDWHWlRfwzxkCCWbPSMvuaRGA9r59CLtqfESWmhO53x97ig22BomBM9ThHwRaWFE4J7Fy5_yVI0cGDbSGuYfnhymsfDBcosjQokm8a39E-nOvitx79jwcMhlxg1OcgDy1-htRPj4TXmxgfHG9i8On-E5C_-b-xiGE63oGHoBMuJTz1tO5PuidI9le2Mi3vT2Guij9l6eSynkisbsWWtyImC2s3YXEXFsMeG0SIccVHblusTjuLudqFMJf2uyPu2byJaMV_-8iAyuzr20n1Zks2kkoRwqgmn9V1bBdI_9nm4Sy_urlbvnRemKmhFKv-jZp_H7Wr6PkWoE3fojlhBr6LQW23zySX2-vlUsAV-bRAi8uYZnC4aYVRKITtiG62Oc0PrHU7oU_TZhB-DWH3R79op2pb9WArvBAGHoL4tXRDR_xHOcXUreCmPOrSwQnKmmRE3fe1MdeU9zr44rEHY1JOETCsj1kKHzrxOmZk2uhc_5k593ppTRD1UVrOpv3JGknK3Lz0UjLxxGwpe6euAvl3FR5Qc6z1XCz7toapqs46npnmgL1hG-M5bxYOvXiEVHuDNxOAMmhPBfA_RzTV0NMr13w=w687-h915-no" width=500 height=600>
