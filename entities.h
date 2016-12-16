@@ -97,12 +97,12 @@ typedef struct ENTITY {
     ubyte f_invuln;
 } ENTITY;
 
-extern ENTITY* addEntity(const uint id, ubyte x, ubyte y, enum ENTITY_TYPE type);
-extern void clearEntities();
-extern ENTITY removeEntity(int i);
-extern void gravity(ENTITY* e);
-extern void tickEntityAnimations();
-extern void addProjectileFrom(ENTITY* e);
+ENTITY* addEntity(const uint id, ubyte x, ubyte y, enum ENTITY_TYPE type);
+void clearEntities();
+ENTITY removeEntity(int i);
+void gravity(ENTITY* e);
+void tickEntityAnimations();
+void addProjectileFrom(ENTITY* e);
 
 INLINE bool isOffScreenX(ENTITY* e) {
     return ENT_X(e) < 0 || ENT_X(e) > SCREEN_WIDTH;
@@ -162,6 +162,7 @@ INLINE void setHurt(ENTITY* e, byte dir) {
 }
 INLINE void setDead(ENTITY* e) {
     e->lastAnimatedTile = 0;
+    e->isJumping = FALSE;
     e->isDead = TRUE;
     e->dx = 0;
     e->dy = 10;
@@ -170,6 +171,9 @@ INLINE void setDead(ENTITY* e) {
     for (int i = 0; i < 10; i+=qran_range(1,4)) {
         setPixel(GROUND_OFFSET, x + i, COLOR(0, 20, 0));
     }
+
+    // vertically flip sprite
+    /* BF_SET(e->obj->attr1, TRUE, ATTR1_VFLIP); */
 }
 
 INLINE short groundDist(ENTITY* e) {

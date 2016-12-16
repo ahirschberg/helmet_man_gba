@@ -7,7 +7,6 @@
 ENTITY allEntities[];
 ubyte objs_length = 0;
 
-
 INLINE void tick_entity_anim(ENTITY* e,
         const int E_STAND_TID,
         const int E_WALK_TID,
@@ -19,8 +18,9 @@ INLINE void tick_entity_anim(ENTITY* e,
         const int E_HURT_LEN,
         const int E_TILES_PER_FRAME) {
     if (e->isDead) {
-        e->state = HURT; // reuse hurt animation when dead.
-        if (e->lastAnimatedTile >= E_HURT_LEN) return; // prevent hurt anim from looping
+        e->isJumping = FALSE;
+        e->state = WALKING;
+        /* if (e->lastAnimatedTile >= E_HURT_LEN) return; // prevent hurt anim from looping */
     }
 
     if (e->state == HURT) {
@@ -29,7 +29,7 @@ INLINE void tick_entity_anim(ENTITY* e,
         } else {
             BF_SET(e->obj->attr2, E_HURT_TID + e->lastAnimatedTile, ATTR2_ID);
         }
-    } else if (e->isJumping) {
+    } else if (e->isJumping) { 
         BF_SET(e->obj->attr2, E_JUMP_TID, ATTR2_ID);
     } else switch(e->state) {
         case WALKING:
@@ -48,42 +48,42 @@ INLINE void tick_entity_anim(ENTITY* e,
     }
 
     // only update tiles per frame on animated states
-    if (e->state == WALKING 
-            || e->state == RUNNING 
+    if (e->state == WALKING
+            || e->state == RUNNING
             || e->state == HURT) e->lastAnimatedTile+=E_TILES_PER_FRAME;
 }
 void tick_animations(ENTITY* e) {
     if (e->type == PLAYER) {
-        tick_entity_anim(e, 
-                PLAYER_STAND_TID, 
+        tick_entity_anim(e,
+                PLAYER_STAND_TID,
                 PLAYER_WALK_TID,
-                PLAYER_RUN_TID, 
+                PLAYER_RUN_TID,
                 PLAYER_HURT_TID,
-                PLAYER_JUMP_TID, 
-                PLAYER_WALK_LEN, 
+                PLAYER_JUMP_TID,
+                PLAYER_WALK_LEN,
                 PLAYER_RUN_LEN,
                 PLAYER_HURT_LEN,
                 PLAYER_TPF);
     } else if (e->type == TALL_ENEMY) {
-        tick_entity_anim(e, 
-                TALL_ENEMY_STAND_TID, 
+        tick_entity_anim(e,
+                TALL_ENEMY_STAND_TID,
                 TALL_ENEMY_WALK_TID,
                 -1,
                 TALL_ENEMY_HURT_TID,
                 TALL_ENEMY_WALK_TID,
-                TALL_ENEMY_WALK_LEN, 
-                -1, 
+                TALL_ENEMY_WALK_LEN,
+                -1,
                 TALL_ENEMY_HURT_LEN,
                 TALL_ENEMY_TPF);
     } else if (e->type == SHORT_ENEMY) {
-        tick_entity_anim(e, 
-                SHORT_ENEMY_STAND_TID, 
+        tick_entity_anim(e,
+                SHORT_ENEMY_STAND_TID,
                 SHORT_ENEMY_WALK_TID,
                 -1,
                 SHORT_ENEMY_HURT_TID,
                 -1,
-                SHORT_ENEMY_WALK_LEN, 
-                -1, 
+                SHORT_ENEMY_WALK_LEN,
+                -1,
                 SHORT_ENEMY_HURT_LEN,
                 SHORT_ENEMY_TPF);
     } else if (e->type == PROJECTILE) {
@@ -94,7 +94,7 @@ void tick_animations(ENTITY* e) {
 }
 
 INLINE bool isOffScreen(ENTITY* e) {
-    return ENT_Y(e) > SCREEN_HEIGHT 
+    return ENT_Y(e) > SCREEN_HEIGHT
         || ENT_Y(e) < 0
         || ENT_X(e) < 0
         || ENT_X(e) > SCREEN_WIDTH;

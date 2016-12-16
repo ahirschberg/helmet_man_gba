@@ -292,7 +292,6 @@ INLINE void runner_checkPlayerCollisions() {
 
         const ENTITY_ATTRS obstacle_attrs = attrs(allEntities + i);
         const byte fix_sprite_height_a_little = (allEntities[i].type == OBSTACLE_SHEET) ? 0 : 4;
-        PUTI(obstacle_attrs.width - player_width);
         if (player_y < obstacle_attrs.height - fix_sprite_height_a_little && player_x < ent_x + obstacle_attrs.width / 2 // why?? 
                 && player_x + player_width - 5 > ent_x) {
             gameOver();
@@ -388,7 +387,6 @@ INLINE void shooter_checkPlayerCollisions() {
                                 score++;
                             }
                         }
-
                         removeEntity(engager_i--);
                     }
                 }
@@ -437,16 +435,18 @@ void tickEntities(const uint count) {
             }
 
             byte ent_action_rand = qran_range(0,20);
-            switch (curr->type) {
-                case TALL_ENEMY:
-                    if (ent_action_rand == 3 && !curr->isJumping) setJumping(curr, 6);
-                    // fallthrough
-                case SHORT_ENEMY:
-                    if(!curr->isDead && !curr->isJumping && ent_action_rand > 16) { // chance to find player again
-                        setWalking(curr, TRIBOOL(ENT_X(PLAYER_ENTITY) - ENT_X(curr) ));
-                    }
-                default:
-                    break;
+            if (!curr->isDead) {
+                switch (curr->type) {
+                    case TALL_ENEMY:
+                        if (ent_action_rand == 3 && !curr->isJumping) setJumping(curr, 6);
+                        // FALLTHROUGH TO SHORT ENEMY
+                    case SHORT_ENEMY:
+                        if(!curr->isJumping && ent_action_rand > 16) { // chance to find player again
+                            setWalking(curr, TRIBOOL(ENT_X(PLAYER_ENTITY) - ENT_X(curr) ));
+                        }
+                    default:
+                        break;
+                }
             }
         }
 

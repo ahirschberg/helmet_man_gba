@@ -13,6 +13,7 @@
 #include "background_img.h"
 
 #include "main.h"
+#include "bios.h"
 
 /*
  * vblank occurs at 160
@@ -61,8 +62,8 @@ void tick(const int frameCounter) {
 
 int ee_next = 0;
 int key_last = 0;
-const unsigned int konami_ee[] = {KEY_UP, KEY_UP, KEY_DOWN, KEY_DOWN, 
-    KEY_LEFT, KEY_RIGHT, KEY_LEFT, KEY_RIGHT, 
+const unsigned int konami_ee[] = {KEY_UP, KEY_UP, KEY_DOWN, KEY_DOWN,
+    KEY_LEFT, KEY_RIGHT, KEY_LEFT, KEY_RIGHT,
     KEY_B, KEY_A, KEY_START};
 void draw()
 {
@@ -115,13 +116,13 @@ void draw()
                     isPaused = FALSE;
                 }
             }
-
         }
 
         switch(gameState) {
             case START_SCREEN:
                 frameCounter = 0;
                 initState(START_SCREEN_NODRAW);
+
                 break;
             case START_SCREEN_NODRAW:
                 if ((frameCounter & 0x7F) == 0) {
@@ -136,11 +137,11 @@ void draw()
                     ee_next = 0;
                     key_last = 0;
                 }
-                if (key_hit(KEY_START)) {
+                if (key_hit(KEY_START) || key_hit(KEY_A) || key_hit(KEY_B) || key_hit(KEY_SELECT)) {
                     if (ee_next > 10) {
                         game_ee_mode = TRUE;
                         PUTS("ENTER GOD MODE");
-                        BF_SET(playerEntity->obj->attr2, 0xF, ATTR2_PALBANK); 
+                        BF_SET(playerEntity->obj->attr2, 0xF, ATTR2_PALBANK);
                     }
                     sqran(frameCounter);
                     redrawBG2(70, 8);
@@ -152,7 +153,7 @@ void draw()
             case RUNNER_TRANSITION:
                 break;
             case RUNNER:
-                if ((key_hit(KEY_UP) || key_hit(KEY_B)) && !playerEntity->isJumping) {
+                if ((key_hit(KEY_UP) || key_hit(KEY_A)) && !playerEntity->isJumping) {
                     setJumping(playerEntity, 8);
                 }
                 if (key_hit(KEY_DOWN)) {
@@ -162,10 +163,10 @@ void draw()
             case SHOOTER_TRANSITION:
                 break;
             case SHOOTER:
-                if (key_hit(KEY_A)) {
+                if (key_hit(KEY_B)) {
                     addProjectileFrom(playerEntity);
                 }
-                if ((key_hit(KEY_UP) || key_hit(KEY_B)) && !playerEntity->isJumping) {
+                if ((key_hit(KEY_UP) || key_hit(KEY_A)) && !playerEntity->isJumping) {
                     setJumping(playerEntity, 8);
                 }
                 const int horiz_input = key_tri_horz();
@@ -185,6 +186,7 @@ void draw()
                 break;
         }
         waitForVblank();
+        /* VBlankIntrWait(); */
         tick(frameCounter++);
 
     } while(1);
@@ -192,6 +194,6 @@ void draw()
 
 int main()
 {
-    REG_DISPCTL = MODE3 | BG2_ENABLE | DCNT_OBJ | DCNT_OBJ_1D;
+    REG_DISPCTL = 3 | BG2_ENABLE | DCNT_OBJ | DCNT_OBJ_1D;
     draw();
 }
