@@ -15,7 +15,8 @@ OFILES = main.o sprites.o entities.o input.o game.o random.o font.o \
 		 player_sprites.o tall_enemy_sprites.o \
 		 projectile_sprites.o background_img.o \
 		 obstacle_tall.o obstacle_rocks.o obstacle_wide.o \
-		 short_enemy_sprites.o random_data.o tile_scroller.o game_over.o
+		 short_enemy_sprites.o random_data.o tile_scroller.o game_over.o \
+		 bios.o
 
 # The header files you have created.
 # This is necessary to determine when to recompile for files.
@@ -69,12 +70,13 @@ $(PROGNAME).elf : crt0.o $(OFILES)
 crt0.o : $(ARMLIB)/crt0.s
 	@$(AS) -mthumb-interwork $^ -o crt0.o
 
+
 %.o : %.c
 	@echo "[COMPILE] Compiling $<"
 	@$(CC) $(CFLAGS) -c $< -o $@
 
-%.o : %.s                                                                        
-	@echo "[ASSEMBLE] Assembling $<"                                               
+%.o : %.s
+	@echo "[ASSEMBLE] Assembling $<"
 	@$(AS) $< -o $@ -mthumb -mthumb-interwork
 
 clean :

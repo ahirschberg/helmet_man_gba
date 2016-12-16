@@ -47,6 +47,7 @@ typedef struct DMA_REC
 
 
 // video
+#define MODE0 0
 #define MODE3 3
 #define BG2_ENABLE  (1<<0xA)
 #define DCNT_OBJ_1D (1<<0x6)

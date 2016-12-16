@@ -49,6 +49,8 @@ typedef struct OBJ_AFFINE
 #define ATTR1_SIZE_SHIFT    0xE
 #define ATTR1_HFLIP_SHIFT   0xC
 #define ATTR1_HFLIP_MASK    (1<<ATTR1_HFLIP_SHIFT)
+#define ATTR1_VFLIP_SHIFT   0xD
+#define ATTR1_VFLIP_MASK    (1<<ATTR1_VFLIP_SHIFT)
 
 #define ATTR0_Y_MASK        0x00FF
 #define ATTR0_Y_SHIFT       0
