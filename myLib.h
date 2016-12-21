@@ -8,17 +8,20 @@ typedef unsigned short u16;
 typedef signed short s16;
 typedef unsigned int u32;
 
-#define NULL  0
+typedef volatile u16 vu16;
+typedef volatile s16 vs16;
+typedef volatile u32 vu32;
+
+typedef void (*fnptr)(void);
+
+#include "memmap.h"
+
+#define NULL  (void*)0
 #define FALSE 0
 #define TRUE  1
 
 #define INLINE static inline
-#define ALIGN4 __attribute__((aligned(4))) // from tonc, align structs to word (TODO how?)
-
-// variables
-#define REG_DISPCTL *(u16 *)0x4000000
-#define SCANLINECOUNTER *(volatile unsigned short*)0x4000006
-#define VIDEOBUFF        ( (u16*)0x6000000 )
+#define ALIGN4 __attribute__((aligned(4)))
 
 // DMA (from http://www.coranac.com/tonc/text/dma.htm)
 typedef struct DMA_REC
@@ -35,7 +38,6 @@ typedef struct DMA_REC
         REG_DMA[ch].dst = (void*)(_dst);\
         REG_DMA[ch].cnt = (count) | (mode);\
     } while(0)
-#define REG_DMA ((volatile DMA_REC*)0x040000B0)
 #define DMA_ENABLE      (1<<0x1F)
 #define DMA_REPEAT      (1<<0x19)
 #define DMA_SRC_FIXED   (2<<0x17)
@@ -70,6 +72,7 @@ typedef struct DMA_REC
     drawRectFW(20, 8, COLOR(10, 10, 10));\
     drawInt(20, 20, (i), 6, WHITE);\
 } while(0)
+
 #define PUTS(s) do {\
     drawRectFW(20, 8, COLOR(10, 10, 10));\
     drawString(20, 20, (s), WHITE);\

@@ -7,6 +7,8 @@ typedef TILE  CHARBLOCK[512];
 typedef TILE8 CHARBLOCK8[256];
 
 typedef struct {u16 data[16];} PALETTE;
+#define WS_PALETTE 16 // palette word size
+
 
 #define palette_mem ((volatile PALETTE*)0x05000200)
 #define tile_mem    ((volatile TILE*)0x6010000)
@@ -23,7 +25,7 @@ typedef struct tagOBJ_ATTR
 } ALIGN4 OBJ_ATTR;
 
 // FIXME
-#define NULL_OBJ_ATTR   ((OBJ_ATTR){2<<0x8, NULL, NULL, NULL}) 
+#define NULL_OBJ_ATTR   ((OBJ_ATTR){2<<0x8, 0, 0, 0}) 
 
 // probably never gonna be used.
 typedef struct OBJ_AFFINE
