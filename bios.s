@@ -2,7 +2,7 @@
     .text           @ aka .section .text
     .code 16        @ aka .thumb
 
-@ VBLANK inter
+@ VBLANK
     .align 2
     .global VBlankIntrWait
     .thumb_func

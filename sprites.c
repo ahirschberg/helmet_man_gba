@@ -6,13 +6,11 @@
 void loadSpriteData4(u16 id, const unsigned int* tile_data, const int tile_length) {
     volatile TILE* tile = tile_mem;
     tile += id;
-
     DMA_TRANSFER(tile, tile_data, tile_length, 3, DMA_CS_32 | DMA_ENABLE);
 }
 
 void loadPaletteData4(u16 id, const unsigned short* palette_data, const int num_palettes) {
     volatile PALETTE* toLoad = (volatile PALETTE*) palette_data;
-    for (int i = 0; i < num_palettes; ++i) {
-        palette_mem[id + i] = toLoad[i];
-    }
+    volatile PALETTE* seek_palette_mem = palette_mem + id;
+    DMA_TRANSFER(seek_palette_mem, toLoad, num_palettes * WS_PALETTE / 2, 3, DMA_CS_32 | DMA_ENABLE);
 }

@@ -1,4 +1,6 @@
 #include "myLib.h"
+#include "memmap.h"
+#include "interrupts.h"
 #include "input.h"
 #include "random.h"
 #include "gfx_helper.h"
@@ -14,6 +16,8 @@
 
 #include "main.h"
 #include "bios.h"
+
+uint frameCounter = 0;
 
 /*
  * vblank occurs at 160
@@ -60,6 +64,7 @@ void tick(const int frameCounter) {
 }
 
 
+
 int ee_next = 0;
 int key_last = 0;
 const unsigned int konami_ee[] = {KEY_UP, KEY_UP, KEY_DOWN, KEY_DOWN,
@@ -67,7 +72,11 @@ const unsigned int konami_ee[] = {KEY_UP, KEY_UP, KEY_DOWN, KEY_DOWN,
     KEY_B, KEY_A, KEY_START};
 void draw()
 {
-    uint frameCounter = 0;
+    REG_ISR_MAIN = NULL; // tell gba what function to call
+    REG_DISPSTAT |= (1<<3); //1<<3 vblank??
+    REG_IE |= IRQ_VBLANK;
+    REG_IME = 1;
+
     loadPaletteData4(0, player_spritesPal, 1);
     loadSpriteData4(PLAYER_STAND_TID, (uint*) player_spritesTiles, player_spritesTilesLen);
 
@@ -94,6 +103,8 @@ void draw()
     bool isPaused = FALSE;
     initState(START_SCREEN);
     do {
+        VBlankIntrWait();
+
         key_poll();
 
         if (key_hit(KEY_SELECT)) {
@@ -185,8 +196,7 @@ void draw()
             default:
                 break;
         }
-        waitForVblank();
-        /* VBlankIntrWait(); */
+        /* waitForVblank(); */
         tick(frameCounter++);
 
     } while(1);
