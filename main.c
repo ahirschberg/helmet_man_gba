@@ -9,7 +9,7 @@
 #include "obstacle_sprites.h"
 #include "tall_enemy_sprites.h"
 #include "short_enemy_sprites.h"
-#include "projectile_sprites.h"
+#include "nin10kitprojectile.h"
 #include "background_img.h"
 
 #include "main.h"
@@ -70,8 +70,8 @@ void draw()
     loadPaletteData4(0, player_spritesPal, 1);
     loadSpriteData4(PLAYER_STAND_TID, (uint*) player_spritesTiles, player_spritesTilesLen);
 
-    loadPaletteData4(1, projectile_spritesPal, 1);
-    loadSpriteData4(PROJECTILE_TID, projectile_spritesTiles, projectile_spritesTilesLen);
+    loadPaletteData4(1, nin10kitprojectile_palette, 1);
+    loadSpriteData4(PROJECTILE_TID, (const u32*)nin10kitprojectile, NIN10KITPROJECTILE_SIZE / 2);
 
     loadPaletteData4(2, tall_enemy_spritesPal, 1);
     loadSpriteData4(TALL_ENEMY_STAND_TID, tall_enemy_spritesTiles, tall_enemy_spritesTilesLen);

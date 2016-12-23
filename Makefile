@@ -15,7 +15,8 @@ OFILES = main.o sprites.o entities.o input.o game.o random.o font.o \
 		 player_sprites.o tall_enemy_sprites.o \
 		 projectile_sprites.o background_img.o \
 		 obstacle_tall.o obstacle_rocks.o obstacle_wide.o \
-		 short_enemy_sprites.o random_data.o tile_scroller.o game_over.o
+		 short_enemy_sprites.o random_data.o tile_scroller.o game_over.o \
+		 nin10kitprojectile.o
 
 # The header files you have created.
 # This is necessary to determine when to recompile for files.
@@ -23,7 +24,8 @@ OFILES = main.o sprites.o entities.o input.o game.o random.o font.o \
 HFILES = sprites.h entities.h input.h game.h gfx_helper.h random.h \
 		 player_sprites.h obstacle_sprites.h tall_enemy_sprites.h \
 		 projectile_sprites.h background_img.h \
-		 short_enemy_sprites.h random_data.h tile_scroller.h game_over.h
+		 short_enemy_sprites.h random_data.h tile_scroller.h game_over.h \
+		 nin10kitprojectile.h
 
 ################################################################################
 # These are various settings used to make the GBA toolchain work
