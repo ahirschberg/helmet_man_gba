@@ -18,16 +18,6 @@
 #include "bios.h"
 
 uint frameCounter = 0;
-
-/*
- * vblank occurs at 160
- * used for changing screen buffer w/o tearing or double buffer
- */
-void waitForVblank() {
-    while(SCANLINECOUNTER > 160);
-    while(SCANLINECOUNTER < 160);
-}
-
 volatile u32 bgColor = BYTETOWORD(WHITE);
 
 void redrawHUDFill(u32 color) {
@@ -63,6 +53,10 @@ void tick(const int frameCounter) {
     }
 }
 
+void isr_main() {
+    REG_IF = IRQ_VBLANK;
+    REG_IFBIOS = IRQ_VBLANK;
+}
 
 
 int ee_next = 0;
@@ -70,13 +64,8 @@ int key_last = 0;
 const unsigned int konami_ee[] = {KEY_UP, KEY_UP, KEY_DOWN, KEY_DOWN,
     KEY_LEFT, KEY_RIGHT, KEY_LEFT, KEY_RIGHT,
     KEY_B, KEY_A, KEY_START};
-void draw()
-{
-    REG_ISR_MAIN = NULL; // tell gba what function to call
-    REG_DISPSTAT |= (1<<3); //1<<3 vblank??
-    REG_IE |= IRQ_VBLANK;
-    REG_IME = 1;
 
+INLINE void loadAssets() {
     loadPaletteData4(0, player_spritesPal, 1);
     loadSpriteData4(PLAYER_STAND_TID, (uint*) player_spritesTiles, player_spritesTilesLen);
 
@@ -97,14 +86,15 @@ void draw()
 
     loadPaletteData4(6, obstacle_widePal, 1);
     loadSpriteData4(OBSTACLE_SHEET_TID, obstacle_wideTiles, obstacle_wideTilesLen);
+}
 
+INLINE void draw()
+{
     ENTITY* playerEntity = PLAYER_ENTITY;
     BF_SET(playerEntity->obj->attr2, 0, ATTR2_PALBANK);
     bool isPaused = FALSE;
     initState(START_SCREEN);
     do {
-        VBlankIntrWait();
-
         key_poll();
 
         if (key_hit(KEY_SELECT)) {
@@ -196,14 +186,26 @@ void draw()
             default:
                 break;
         }
-        /* waitForVblank(); */
-        tick(frameCounter++);
 
+        // FIXME hack fix stutter in VBlankIntrWait by calling it every other frame??
+        // how the heck does this fix the stuttering??
+        // how the heck does this NOT cause tearing
+        if (frameCounter & 1) VBlankIntrWait();
+
+        tick(frameCounter++);
     } while(1);
 }
 
 int main()
 {
     REG_DISPCTL = 3 | BG2_ENABLE | DCNT_OBJ | DCNT_OBJ_1D;
+
+    // setup interrupts
+    REG_ISR_MAIN = isr_main; // tell gba what function to call
+    REG_DISPSTAT |= (1<<3); //1<<3 vblank??
+    REG_IE |= IRQ_VBLANK;
+    REG_IME = 1;
+
+    loadAssets();
     draw();
 }
