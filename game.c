@@ -4,6 +4,7 @@
 #include "gfx_helper.h"
 #include "entities.h"
 #include "game.h"
+#include "player.h"
 
 #include "tile_scroller.h"
 #include "game_over.h"
@@ -145,11 +146,10 @@ INLINE ENTITY* addShortEnemy(int x) {
 void spawnEnemies(int roomLevel, int spawn_wave) {
     switch (roomLevel) {
         case 0:
-            if (spawn_wave & 1) { // slow down the spawns
-                if (spawn_wave < 3) addTallEnemy(0);
-                else if (spawn_wave < 5) addTallEnemy(SWAP_SIDE(spawn_wave >> 1));
-                else addTallEnemy(SWAP_SIDE(BRAND()));
-            }
+            if (spawn_wave < 3) addTallEnemy(0);
+            else if (spawn_wave == 4) addShortEnemy(1);
+            else if (spawn_wave < 5) addTallEnemy(SWAP_SIDE(spawn_wave >> 1));
+            else addTallEnemy(SWAP_SIDE(BRAND()));
             break;
         case 1:
             if (spawn_wave & 3) {
@@ -259,7 +259,7 @@ void tickGame(const uint frame) {
                     redrawHUD();
                 }
                 if ((frame & 0x7) == 4 && --shooter_framesToNextSpawn <= 0 && objs_length < 8) {
-                    shooter_framesToNextSpawn = 4 * difficulty_inc + 10;
+                    shooter_framesToNextSpawn = (int)(1.0f / (difficulty_inc + 1) * 30);
                     spawnEnemies(difficulty_inc / 2, shooter_spawnWave++);
                 }
             }
@@ -414,7 +414,6 @@ void tickEntities(const uint count) {
             else OBJ_DY(*curr->obj, ~(curr->dy)+1);
 
             decrementInvulnFrames(curr);
-            // don't worry about stopping wraparound on these screens
             if (gameState == SHOOTER) {
                 bool stoppedWraparound = FALSE;
                 if (ENT_X(curr) + (curr)->dx > SCREEN_WIDTH - attrs(curr).width) { // wrap around
@@ -427,6 +426,7 @@ void tickEntities(const uint count) {
                     OBJ_DX(curr->obj->attr1, ((curr)->dx + scrollerDX));
                 }
 
+                // instead of stopping wraparound on projectiles, just remove them
                 if (stoppedWraparound && curr->type == PROJECTILE) {
                     removeEntity(i--);
                 }
