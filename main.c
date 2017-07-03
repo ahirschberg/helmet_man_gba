@@ -187,9 +187,10 @@ INLINE void draw()
                 break;
         }
 
-        // FIXME hack fix stutter in VBlankIntrWait by calling it every other frame??
+        // hack fix stutter in VBlankIntrWait
         // how the heck does this fix the stuttering??
         // how the heck does this NOT cause tearing
+        // Alex 7-2-17: still no idea, but it's a feature now!
         if (frameCounter & 1) VBlankIntrWait();
 
         tick(frameCounter++);
