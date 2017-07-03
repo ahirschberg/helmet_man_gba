@@ -3,6 +3,7 @@
 #include "gfx_helper.h"
 #include "entities.h"
 #include "game.h"
+#include "player.h"
 
 ENTITY allEntities[];
 ubyte objs_length = 0;
@@ -29,7 +30,7 @@ INLINE void tick_entity_anim(ENTITY* e,
         } else {
             BF_SET(e->obj->attr2, E_HURT_TID + e->lastAnimatedTile, ATTR2_ID);
         }
-    } else if (e->isJumping) { 
+    } else if (e->isJumping) {
         BF_SET(e->obj->attr2, E_JUMP_TID, ATTR2_ID);
     } else switch(e->state) {
         case WALKING:
@@ -157,6 +158,11 @@ ENTITY removeEntity(const int index) {
         PUTS("WARN: POS 0 (player) removed.");
     }
     ENTITY removed = allEntities[index];
+    PUTI(PLAYER_DATA->projectile_count);
+    if (removed.type == PROJECTILE) {
+        PLAYER_DATA->projectile_count--;
+    }
+
     OBJ_ATTR_MEM[index] = OBJ_ATTR_MEM[objs_length - 1];
     allEntities[index] = allEntities[objs_length - 1];
     allEntities[index].obj = OBJ_ATTR_MEM + index;
@@ -169,12 +175,17 @@ void clearEntities(int first_idx) {
     for (int i = first_idx; i < objs_length; i++) {
         OBJ_ATTR_MEM[i] = NULL_OBJ_ATTR;
     }
+    PLAYER_DATA->projectile_count = 0;
     objs_length = first_idx;
 }
 
 void addProjectileFrom(ENTITY* e) {
-    const byte facing = getFacing(e->obj);
-    ENTITY* proj = addEntity(PROJECTILE_TID, facing * 8 + ENT_X(e) + attrs(e).width / 2, ENT_Y(e) + attrs(e).height/2 + 8, PROJECTILE);
-    setFacing(proj->obj, facing);
-    proj->dx = facing * 5;
+    if (PLAYER_DATA->projectile_count > 2) return; // limit fire rate
+    else {
+        const byte facing = getFacing(e->obj);
+        ENTITY* proj = addEntity(PROJECTILE_TID, facing * 8 + ENT_X(e) + attrs(e).width / 2, ENT_Y(e) + attrs(e).height/2 + 8, PROJECTILE);
+        setFacing(proj->obj, facing);
+        proj->dx = facing * 5;
+        PLAYER_DATA->projectile_count++;
+    }
 }

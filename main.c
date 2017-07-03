@@ -138,7 +138,7 @@ INLINE void draw()
                     ee_next = 0;
                     key_last = 0;
                 }
-                if (key_hit(KEY_START) || key_hit(KEY_A) || key_hit(KEY_B) || key_hit(KEY_SELECT)) {
+                if (key_hit(KEY_START)){ // || key_hit(KEY_A) || key_hit(KEY_B) || key_hit(KEY_SELECT)) {
                     if (ee_next > 10) {
                         game_ee_mode = TRUE;
                         PUTS("ENTER GOD MODE");
