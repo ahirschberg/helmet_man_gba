@@ -1,14 +1,14 @@
 #ifndef SPRITES_H
 #define SPRITES_H
 // tile 8x8@4bpp: 32bytes; 8 ints
-typedef struct { u32 data[8];  } TILE, TILE4;
+typedef struct { uint32_t data[8];  } TILE, TILE4;
 // d-tile: double-sized tile (8bpp)
-typedef struct { u32 data[16]; } TILE8;
+typedef struct { uint32_t data[16]; } TILE8;
 // tile block: 32x16 tiles, 16x16 d-tiles
 typedef TILE  CHARBLOCK[512];
 typedef TILE8 CHARBLOCK8[256];
 
-typedef struct {u16 data[16];} PALETTE;
+typedef struct {uint16_t data[16];} PALETTE;
 #define WS_PALETTE 16 // palette word size
 
 
@@ -20,10 +20,10 @@ typedef struct {u16 data[16];} PALETTE;
 #define OBJ_ATTR_MEM ((volatile OBJ_ATTR*)0x07000000)
 typedef struct tagOBJ_ATTR
 {
-    u16 attr0;
-    u16 attr1;
-    u16 attr2;
-    s16 fill;
+    uint16_t attr0;
+    uint16_t attr1;
+    uint16_t attr2;
+    int16_t fill;
 } ALIGN4 OBJ_ATTR;
 
 // FIXME
@@ -32,14 +32,14 @@ typedef struct tagOBJ_ATTR
 // probably never gonna be used.
 typedef struct OBJ_AFFINE
 {
-    u16 fill0[3];
-    s16 pa;
-    u16 fill1[3];
-    s16 pb;
-    u16 fill2[3];
-    s16 pc;
-    u16 fill3[3];
-    s16 pd;
+    uint16_t fill0[3];
+    int16_t pa;
+    uint16_t fill1[3];
+    int16_t pb;
+    uint16_t fill2[3];
+    int16_t pc;
+    uint16_t fill3[3];
+    int16_t pd;
 } ALIGN4 OBJ_AFFINE;
 
 #define ATTR2_ID_MASK       0x03FF
@@ -96,7 +96,7 @@ INLINE signed short sext9(unsigned short num) {
                                     ATTR0_Y))
 #define PLAYER_OBJ_PTR         (OBJ_ATTR_MEM)
 
-extern void loadSpriteData4(u16 id, const unsigned int* tile_data, const int tile_length);
-extern void loadPaletteData4(u16 id, const unsigned short* palette_data, const int palette_length);
+extern void loadSpriteData4(uint16_t id, const unsigned int* tile_data, const int tile_length);
+extern void loadPaletteData4(uint16_t id, const unsigned short* palette_data, const int palette_length);
 
 #endif

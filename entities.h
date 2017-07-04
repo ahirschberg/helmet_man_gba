@@ -63,12 +63,12 @@ enum ENT_STATE {
 };
 
 typedef struct ENTITY_ATTRS {
-    const ubyte height;
-    const ubyte width;
+    const uint8_t height;
+    const uint8_t width;
     const bool gravityEnabled;
-    const ubyte tile_shape;
-    const ubyte tile_size;
-    const ubyte default_palette;
+    const uint8_t tile_shape;
+    const uint8_t tile_size;
+    const uint8_t default_palette;
 } ENTITY_ATTRS;
 
 enum ENTITY_TYPE {
@@ -90,17 +90,17 @@ static const ENTITY_ATTRS entity_attrs[] = {
 typedef struct ENTITY {
     volatile OBJ_ATTR* obj;
     enum ENTITY_TYPE type;
-    byte dy;
-    byte dx;
+    int8_t dy;
+    int8_t dx;
     enum ENT_STATE state;
     bool isJumping;
     bool isDead;
-    ubyte lastAnimatedTile;
-    ubyte health;
-    ubyte f_invuln;
+    uint8_t lastAnimatedTile;
+    uint8_t health;
+    uint8_t f_invuln;
 } ENTITY;
 
-ENTITY* addEntity(const uint id, ubyte x, ubyte y, enum ENTITY_TYPE type);
+ENTITY* addEntity(const uint32_t id, uint8_t x, uint8_t y, enum ENTITY_TYPE type);
 void clearEntities(int firstIdx);
 ENTITY removeEntity(int i);
 void gravity(ENTITY* e);
@@ -116,7 +116,7 @@ INLINE int getFacing(volatile OBJ_ATTR* obj) {
     return flipped ? -1 : 1;
 }
 
-INLINE void setFacing(volatile OBJ_ATTR* obj, byte dir) {
+INLINE void setFacing(volatile OBJ_ATTR* obj, int8_t dir) {
     const bool toFlip = (dir == -1) ? TRUE : FALSE;
     BF_SET(obj->attr1, toFlip, ATTR1_HFLIP);
 }
@@ -128,26 +128,26 @@ INLINE void setEntityState(ENTITY* e, enum ENT_STATE newState) {
     } // else do nothing
 }
 
-INLINE void setWalking(ENTITY* e, byte dir) {
+INLINE void setWalking(ENTITY* e, int8_t dir) {
     setEntityState(e, WALKING);
     setFacing(e->obj, dir);
     e->dx = 3 * dir;
 }
 
 // set walking, but only if the player is not in a higher state (ie hurt)
-INLINE void setWalkingWeak(ENTITY* e, byte dir) {
+INLINE void setWalkingWeak(ENTITY* e, int8_t dir) {
     if (e->state < WALKING) setWalking(e, dir);
     else { // duplicate from setWalking
         setFacing(e->obj, dir);
         e->dx = 3 * dir;
     }
 }
-INLINE void setRunning(ENTITY* e, byte dir) {
+INLINE void setRunning(ENTITY* e, int8_t dir) {
     setEntityState(e, RUNNING);
     setFacing(e->obj, dir);
     e->dx = 7 * dir;
 }
-INLINE void setJumping(ENTITY* e, byte dy) {
+INLINE void setJumping(ENTITY* e, int8_t dy) {
     e->isJumping = TRUE;
     e->dy = dy;
 }
@@ -158,7 +158,7 @@ INLINE void setStanding(ENTITY* e) {
 
 #define HURT_DX 4
 
-INLINE void setHurt(ENTITY* e, byte dir) {
+INLINE void setHurt(ENTITY* e, int8_t dir) {
     setEntityState(e, HURT);
     e->dx = dir * HURT_DX;
     e->dy = 2;
@@ -185,6 +185,6 @@ INLINE int groundDist(ENTITY* e) {
 }
 
 ENTITY allEntities[ENTITIES_LEN];
-extern ubyte objs_length;
+extern uint8_t objs_length;
 
-extern OBJ_ATTR _setupObj(const uint id, ubyte x, ubyte y, enum ENTITY_TYPE type);
+extern OBJ_ATTR _setupObj(const uint32_t id, uint8_t x, uint8_t y, enum ENTITY_TYPE type);

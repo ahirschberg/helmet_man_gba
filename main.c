@@ -17,10 +17,10 @@
 #include "main.h"
 #include "bios.h"
 
-uint frameCounter = 0;
-volatile u32 bgColor = BYTETOWORD(WHITE);
+uint32_t frameCounter = 0;
+volatile uint32_t bgColor = BYTETOWORD(WHITE);
 
-void redrawHUDFill(u32 color) {
+void redrawHUDFill(uint32_t color) {
     drawRectFW(0, 10, color);
 }
 void redrawBG2(int start, int height) {
@@ -32,7 +32,7 @@ void redrawHUD() {
         const int lastCol = drawString(1, 10, "Score:", BLACK);
         drawInt(1, lastCol, score, 4, BLUE);
         if (hud_mode > 1) {
-            const ubyte phealth = PLAYER_ENTITY->health;
+            const uint8_t phealth = PLAYER_ENTITY->health;
             for (int i = 0; i < phealth; i++) {
                 drawChar(1, 200 - i * 6, 3, RED);
             }
@@ -67,7 +67,7 @@ const unsigned int konami_ee[] = {KEY_UP, KEY_UP, KEY_DOWN, KEY_DOWN,
 
 INLINE void loadAssets() {
     loadPaletteData4(0, player_spritesPal, 1);
-    loadSpriteData4(PLAYER_STAND_TID, (uint*) player_spritesTiles, player_spritesTilesLen);
+    loadSpriteData4(PLAYER_STAND_TID, (uint32_t*) player_spritesTiles, player_spritesTilesLen);
 
     loadPaletteData4(1, projectile_spritesPal, 1);
     loadSpriteData4(PROJECTILE_TID, projectile_spritesTiles, projectile_spritesTilesLen);

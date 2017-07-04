@@ -1,7 +1,7 @@
 // credit tonc: http://www.coranac.com/tonc/text/keys.htm 
-extern u16 __key_curr, __key_prev;
+extern uint16_t __key_curr, __key_prev;
 
-#define REG_KEYINPUT *(volatile u32*)0x4000130
+#define REG_KEYINPUT *(volatile uint32_t*)0x4000130
 
 #define KEY_A        0x0001
 #define KEY_B        0x0002
@@ -24,33 +24,33 @@ INLINE void key_poll()
 }
 
 // Basic state checks
-INLINE u32 key_curr_state()         {   return __key_curr;          }
-INLINE u32 key_prev_state()         {   return __key_prev;          }
-INLINE u32 key_is_down(u32 key)     {   return  __key_curr & key;   }
-INLINE u32 key_is_up(u32 key)       {   return ~__key_curr & key;   }
-INLINE u32 key_was_down(u32 key)    {   return  __key_prev & key;   }
-INLINE u32 key_was_up(u32 key)      {   return ~__key_prev & key;   }
+INLINE uint32_t key_curr_state()         {   return __key_curr;          }
+INLINE uint32_t key_prev_state()         {   return __key_prev;          }
+INLINE uint32_t key_is_down(uint32_t key)     {   return  __key_curr & key;   }
+INLINE uint32_t key_is_up(uint32_t key)       {   return ~__key_curr & key;   }
+INLINE uint32_t key_was_down(uint32_t key)    {   return  __key_prev & key;   }
+INLINE uint32_t key_was_up(uint32_t key)      {   return ~__key_prev & key;   }
 // Transitional state checks.
 
 // Key is changing state.
-INLINE u32 key_transit(u32 key)
+INLINE uint32_t key_transit(uint32_t key)
 {   return ( __key_curr ^  __key_prev) & key;   }
 
 // Key is held (down now and before).
-INLINE u32 key_held(u32 key)
+INLINE uint32_t key_held(uint32_t key)
 {   return ( __key_curr &  __key_prev) & key;  }
 
 // Key is being hit (down now, but not before).
-INLINE u32 key_hit(u32 key)
+INLINE uint32_t key_hit(uint32_t key)
 {   return ( __key_curr &~ __key_prev) & key;  }
 
 //Key is being released (up now but down before)
-INLINE u32 key_released(u32 key)
+INLINE uint32_t key_released(uint32_t key)
 {   return (~__key_curr &  __key_prev) & key;  }
 
 // === (tonc_core.h) ==================================================
 // tribool: 1 if {plus} on, -1 if {minus} on, 0 if {plus}=={minus}
-INLINE int bit_tribool(u32 x, int plus, int minus)
+INLINE int bit_tribool(uint32_t x, int plus, int minus)
 {   return ((x>>plus)&1) - ((x>>minus)&1);  }
 // === (tonc_input.h) =================================================
 enum eKeyIndex

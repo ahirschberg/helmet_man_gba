@@ -9,21 +9,20 @@
 #include "tile_scroller.h"
 #include "game_over.h"
 
-const ubyte difficulty_inc_len = 7 * 2;
-uint score = 0;
+const uint8_t difficulty_inc_len = 7 * 2;
+uint32_t score = 0;
 bool game_ee_mode = FALSE;
-ubyte hud_mode = 0;
+uint8_t hud_mode = 0;
 int scoreToNext = 0;
-ubyte difficulty_inc = 0;
+uint8_t difficulty_inc = 0;
 
 // runner
 // FIXME
-const ubyte runner_points_inc[] =  {50, 7, 13, 15, 20, 25, 30};
-byte scrollerDX = 0;
+const uint8_t runner_points_inc[] =  {10, 7, 13, 15, 20, 25, 30};
+int8_t scrollerDX = 0;
 
 // shooter
-const ubyte shooter_points_inc[] = {10, 13, 15, 17, 20, 25, 30};
-
+const uint8_t shooter_points_inc[] = {10, 13, 15, 17, 20, 25, 30};
 
 void reset() {
     score = 0;
@@ -34,13 +33,13 @@ void reset() {
 }
 
 // game over
-ubyte game_over_anim_frame = 0;
+uint8_t game_over_anim_frame = 0;
 INLINE int difficultyPlusPlus() {
     if (difficulty_inc < difficulty_inc_len - 1) difficulty_inc++;
     return difficulty_inc;
 }
 
-void drawFloor(ubyte offset) {
+void drawFloor(uint8_t offset) {
     drawImageFW(GROUND_OFFSET, 16, 16 * offset, tile_scroller);
 }
 
@@ -83,7 +82,7 @@ void initState(const enum GAME_STATE state) {
             else if (difficulty_inc < 5) scrollerDX = -8;
             else scrollerDX = -9;
 
-            PLAYER_ENTITY->dx = ((byte) -1) * scrollerDX;
+            PLAYER_ENTITY->dx = ((int8_t) -1) * scrollerDX;
             break;
         case SHOOTER_TRANSITION:
             clearEntities(1);
@@ -125,8 +124,8 @@ void gameOver() {
 }
 
 int rnum = 0x0;
-u16 color = BLACK;
-ubyte last_player_health = -1;
+uint16_t color = BLACK;
+uint8_t last_player_health = -1;
 bool ee_longTitle = FALSE;
 
 INLINE ENTITY* addTallEnemy(int x) {
@@ -143,12 +142,12 @@ INLINE ENTITY* addShortEnemy(int x) {
 
 void spawnEnemies(int roomLevel, int spawn_wave) {
     // Uncomment for a debug fight
-//    if (spawn_wave == 1) {
-//        for (int i = 0; i < 10; ++i) {
-//            addShortEnemy(0);
-//        }
-//    }
-//    return;
+    if (spawn_wave == 1) {
+        for (int i = 0; i < 10; ++i) {
+            addShortEnemy(0);
+        }
+    }
+    return;
     switch (roomLevel) {
         case 0:
             if (spawn_wave < 3) addTallEnemy(0);
@@ -181,9 +180,9 @@ void spawnEnemies(int roomLevel, int spawn_wave) {
     }
 }
 
-ubyte rock_lobster = 0; // FIXME move to game_state with descriptive name.
-void tickGame(const uint frame) {
-    const ubyte frame4s = frame & 0xFF;
+uint8_t rock_lobster = 0; // FIXME move to game_state with descriptive name.
+void tickGame(const uint32_t frame) {
+    const uint8_t frame4s = frame & 0xFF;
     switch(gameState) {
         case START_SCREEN_NODRAW:
             if (ee_longTitle && frame4s == rnum) {
@@ -211,7 +210,7 @@ void tickGame(const uint frame) {
             break;
         case RUNNER_TRANSITION:
             ;
-            const byte dir = TRIBOOL(10 - ENT_X(PLAYER_ENTITY));
+            const int8_t dir = TRIBOOL(10 - ENT_X(PLAYER_ENTITY));
             setRunning(PLAYER_ENTITY, dir); // player walks towards col 10
 
             if (IABS(ENT_X(PLAYER_ENTITY) - 10) < 4) {
@@ -232,8 +231,9 @@ void tickGame(const uint frame) {
                     if (objs_length < 4) {
                         const int ran = qran_range(0, 3);
                         switch(ran) {
-                            case 0: ;
-                                const uint rock_tid = (rock_lobster++ & 1) ? OBSTACLE_ROCK1_TID : OBSTACLE_ROCK2_TID;
+                            case 0:
+                                ;
+                                const uint32_t rock_tid = (rock_lobster++ & 1) ? OBSTACLE_ROCK1_TID : OBSTACLE_ROCK2_TID;
                                 addEntity(rock_tid, SCREEN_WIDTH, GROUND_OFFSET, OBSTACLE_ROCK);
                                 break;
                             case 1:
@@ -287,8 +287,8 @@ void tickGame(const uint frame) {
 }
 
 INLINE void runner_checkPlayerCollisions() {
-    const ubyte player_x = (const ubyte) ENT_X(PLAYER_ENTITY);
-    const ubyte player_y = (const ubyte) groundDist(PLAYER_ENTITY);
+    const uint8_t player_x = (const uint8_t) ENT_X(PLAYER_ENTITY);
+    const uint8_t player_y = (const uint8_t) groundDist(PLAYER_ENTITY);
     const int player_width = attrs(PLAYER_ENTITY).width;
 
     int i = 1;
@@ -296,7 +296,7 @@ INLINE void runner_checkPlayerCollisions() {
         const short ent_x = ENT_X(allEntities+i);
 
         const ENTITY_ATTRS obstacle_attrs = attrs(allEntities + i);
-        const byte fix_sprite_height_a_little = (allEntities[i].type == OBSTACLE_SHEET) ? 0 : 4;
+        const int8_t fix_sprite_height_a_little = (allEntities[i].type == OBSTACLE_SHEET) ? 0 : 4;
         if (player_y < obstacle_attrs.height - fix_sprite_height_a_little && player_x < ent_x + obstacle_attrs.width / 2 // why?? 
                 && player_x + player_width - 5 > ent_x) {
             gameOver();
@@ -309,7 +309,7 @@ INLINE void runner_checkPlayerCollisions() {
     }
 }
 
-bool hurtEntity(ENTITY* e, byte damage, byte dir) {
+bool hurtEntity(ENTITY* e, int8_t damage, int8_t dir) {
     setHurt(e, dir);
     if (((signed char)e->health) - damage <= 0) {
         e->health = 0;
@@ -331,7 +331,7 @@ int decrementInvulnFrames(ENTITY* e) {
 }
 
 INLINE void shooter_checkPlayerCollisions() {
-    byte playerHurt_tribool = 0;
+    int8_t playerHurt_tribool = 0;
     PUTI(PLAYER_ENTITY->f_invuln);
 
     int engager_i = 0;
@@ -344,10 +344,10 @@ INLINE void shooter_checkPlayerCollisions() {
         }
         ENTITY* engager = allEntities + engager_i;
         const enum ENTITY_TYPE engager_type = engager->type;
-        const ubyte engager_x = ENT_X(engager);
-        const ubyte engager_y = groundDist(engager);
-        const ubyte engager_width = attrs(engager).width;
-        const ubyte engager_height = attrs(engager).height;
+        const uint8_t engager_x = ENT_X(engager);
+        const uint8_t engager_y = groundDist(engager);
+        const uint8_t engager_width = attrs(engager).width;
+        const uint8_t engager_height = attrs(engager).height;
 
         int i = 1;
         while (i < objs_length) {
@@ -356,16 +356,16 @@ INLINE void shooter_checkPlayerCollisions() {
                 continue;
             }
 
-            const ubyte ent_x = ENT_X(allEntities+i);
-            const ubyte ent_y = groundDist(allEntities + i);
+            const uint8_t ent_x = ENT_X(allEntities+i);
+            const uint8_t ent_y = groundDist(allEntities + i);
             const ENTITY_ATTRS attrs = attrs(allEntities + i);
             // check bounding boxes
-            const ubyte eheight = attrs.height;
-            const ubyte ewidth  = attrs.width;
+            const uint8_t eheight = attrs.height;
+            const uint8_t ewidth  = attrs.width;
 
             if (engager_type == PLAYER) {
-                const uint wider = (ewidth > engager_width) ? ewidth : engager_width;
-                const uint taller = (eheight > engager_height) ? eheight : engager_height;
+                const uint32_t wider = (ewidth > engager_width) ? ewidth : engager_width;
+                const uint32_t taller = (eheight > engager_height) ? eheight : engager_height;
 
                 if (engager_y - ent_y > engager_width - 8
                         && IABS(engager_x - ent_x) <= wider + 5  // make the player head jumping more forgiving
@@ -418,7 +418,7 @@ INLINE void shooter_checkPlayerCollisions() {
     }
 }
 
-void tickEntities(const uint count) {
+void tickEntities(const uint32_t count) {
     if (!(count & 3)) {
         for (int i = 0; i < objs_length; i++) {
             ENTITY* curr = allEntities + i;
@@ -446,7 +446,7 @@ void tickEntities(const uint count) {
                 OBJ_DX(curr->obj->attr1, ((curr)->dx + scrollerDX));
             }
 
-            byte ent_action_rand = qran_range(0,20);
+            int8_t ent_action_rand = qran_range(0,20);
             if (!curr->isDead) {
                 switch (curr->type) {
                     case TALL_ENEMY:

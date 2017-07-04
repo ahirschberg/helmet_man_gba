@@ -14,4 +14,4 @@
 #define REG_PAUSE			*(vu16*)(REG_BASE+0x0300)	//!< Pause system (?)
 
 #define REG_DMA             ((volatile DMA_REC*)0x040000B0)
-#define VIDEOBUFF           ((u16*)0x6000000)
+#define VIDEOBUFF           ((uint16_t*)0x6000000)
