@@ -1,5 +1,7 @@
 #ifndef MYLIB_H
 #define MYLIB_H
+
+
 typedef unsigned char bool;
 typedef unsigned char uint8_t;
 typedef signed char int8_t;
@@ -68,6 +70,8 @@ typedef struct DMA_REC
 #define TRIBOOL(a) (a == 0 ? a : (a < 0 ? -1 : 1))
 #define BYTETOWORD(val16) ((val16) << 16 | (val16))
 
+#include "gfx_helper.h"
+
 #define PUTI(i) do {\
     drawRectFW(20, 8, COLOR(10, 10, 10));\
     drawInt(20, 20, (i), 6, WHITE);\
@@ -77,5 +81,6 @@ typedef struct DMA_REC
     drawRectFW(20, 8, COLOR(10, 10, 10));\
     drawString(20, 20, (s), WHITE);\
 } while(0)
+
 
 #endif

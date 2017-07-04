@@ -1,43 +1,30 @@
 #include "myLib.h"
 #include "random.h"
 #include "main.h"
-#include "gfx_helper.h"
 #include "entities.h"
 #include "game_state.h"
 #include "game.h"
+#include "difficulty.h"
 
 #include "tile_scroller.h"
 #include "game_over.h"
 
-const uint8_t difficulty_inc_len = 7 * 2;
 uint32_t score = 0;
 bool game_ee_mode = FALSE;
 uint8_t hud_mode = 0;
-int scoreToNext = 0;
-uint8_t difficulty_inc = 0;
 
 // runner
-// FIXME
-const uint8_t runner_points_inc[] =  {10, 7, 13, 15, 20, 25, 30};
 int8_t scrollerDX = 0;
-
-// shooter
-const uint8_t shooter_points_inc[] = {10, 13, 15, 17, 20, 25, 30};
 
 void reset() {
     score = 0;
     game_ee_mode = FALSE;
     hud_mode = 0;
-    scoreToNext = 0;
-    difficulty_inc = 0;
+    Difficulty_reset();
 }
 
 // game over
 uint8_t game_over_anim_frame = 0;
-INLINE int difficultyPlusPlus() {
-    if (difficulty_inc < difficulty_inc_len - 1) difficulty_inc++;
-    return difficulty_inc;
-}
 
 void drawFloor(uint8_t offset) {
     drawImageFW(GROUND_OFFSET, 16, 16 * offset, tile_scroller);
@@ -68,7 +55,7 @@ void initState(const enum GAME_STATE state) {
             break;
         case RUNNER_TRANSITION:
             clearEntities(1);
-            scoreToNext+=runner_points_inc[difficultyPlusPlus() / 2];
+            Difficulty_initNext(RUNNER, score);
             break;
         case RUNNER:
             clearEntities(1);
@@ -78,16 +65,17 @@ void initState(const enum GAME_STATE state) {
             setRunning(PLAYER_ENTITY, 0);
             setFacing(PLAYER_ENTITY->obj, 1);
 
-            if (difficulty_inc < 3) scrollerDX = -7;
-            else if (difficulty_inc < 5) scrollerDX = -8;
-            else scrollerDX = -9;
+            // FIXME
+            scrollerDX = -7;
+//            else if (difficulty_inc < 5) scrollerDX = -8;
+//            else scrollerDX = -9;
 
             PLAYER_ENTITY->dx = ((int8_t) -1) * scrollerDX;
             break;
         case SHOOTER_TRANSITION:
             clearEntities(1);
             hud_mode = 2; redrawHUD();
-            scoreToNext+=shooter_points_inc[difficultyPlusPlus() / 2];
+            Difficulty_initNext(SHOOTER, score);
             PLAYER_ENTITY->health = 5;
             setWalking(PLAYER_ENTITY, DIR_RIGHT);
             scrollerDX = 0;
@@ -142,12 +130,12 @@ INLINE ENTITY* addShortEnemy(int x) {
 
 void spawnEnemies(int roomLevel, int spawn_wave) {
     // Uncomment for a debug fight
-    if (spawn_wave == 1) {
-        for (int i = 0; i < 10; ++i) {
-            addShortEnemy(0);
-        }
-    }
-    return;
+//    if (spawn_wave == 1) {
+//        for (int i = 0; i < 10; ++i) {
+//            addShortEnemy(0);
+//        }
+//    }
+//    return;
     switch (roomLevel) {
         case 0:
             if (spawn_wave < 3) addTallEnemy(0);
@@ -219,7 +207,7 @@ void tickGame(const uint32_t frame) {
             }
             break;
         case RUNNER:
-            if (((signed int)score) - scoreToNext >= 0) {
+            if (Difficulty_shouldTransition(score)) {
                 initState(SHOOTER_TRANSITION);
             } else {
                 if ((frame & 0xF) == 0) {
@@ -247,7 +235,7 @@ void tickGame(const uint32_t frame) {
                         }
                     }
                     // TODO: make this more tuned to difficulty
-                    rnum = qran_range(100 - difficulty_inc * 2, 150 - difficulty_inc * 3);
+                    rnum = qran_range(100, 150);
                 }
             }
             break;
@@ -257,15 +245,15 @@ void tickGame(const uint32_t frame) {
             }
             break;
         case SHOOTER:
-            if (((signed int)score) - scoreToNext >= 0) {
+            if (Difficulty_shouldTransition(score)) {
                 initState(RUNNER_TRANSITION);
             } else {
                 if ((frame & 3) == 0 && PLAYER_ENTITY->health != last_player_health) {
                     redrawHUD();
                 }
                 if ((frame & 0x7) == 4 && --ENEMY_DATA->ticks_until_next_spawn <= 0 && objs_length < 8) {
-                    ENEMY_DATA->ticks_until_next_spawn = (int)(1.0f / (difficulty_inc + 1) * 30);
-                    spawnEnemies(difficulty_inc / 2, ENEMY_DATA->spawn_wave_id++);
+                    ENEMY_DATA->ticks_until_next_spawn = (int)(1.0f / (Difficulty_level + 1) * 30);
+                    spawnEnemies(Difficulty_level / 2, ENEMY_DATA->spawn_wave_id++);
                 }
             }
             break;
