@@ -1,3 +1,5 @@
+#ifndef MYLIB_H
+#define MYLIB_H
 typedef unsigned char bool;
 typedef unsigned char ubyte;
 typedef signed char byte;
@@ -78,3 +80,4 @@ typedef struct DMA_REC
     drawString(20, 20, (s), WHITE);\
 } while(0)
 
+#endif

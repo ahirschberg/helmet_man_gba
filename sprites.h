@@ -1,3 +1,5 @@
+#ifndef SPRITES_H
+#define SPRITES_H
 // tile 8x8@4bpp: 32bytes; 8 ints
 typedef struct { u32 data[8];  } TILE, TILE4;
 // d-tile: double-sized tile (8bpp)
@@ -25,7 +27,7 @@ typedef struct tagOBJ_ATTR
 } ALIGN4 OBJ_ATTR;
 
 // FIXME
-#define NULL_OBJ_ATTR   ((OBJ_ATTR){2<<0x8, 0, 0, 0}) 
+#define NULL_OBJ_ATTR   ((volatile OBJ_ATTR){2<<0x8, 0, 0, 0})
 
 // probably never gonna be used.
 typedef struct OBJ_AFFINE
@@ -96,3 +98,5 @@ INLINE signed short sext9(unsigned short num) {
 
 extern void loadSpriteData4(u16 id, const unsigned int* tile_data, const int tile_length);
 extern void loadPaletteData4(u16 id, const unsigned short* palette_data, const int palette_length);
+
+#endif

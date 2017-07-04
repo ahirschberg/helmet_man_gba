@@ -1,9 +1,6 @@
 #include "myLib.h"
-#include "random.h"
-#include "gfx_helper.h"
 #include "entities.h"
-#include "game.h"
-#include "player.h"
+#include "game_state.h"
 
 ENTITY allEntities[];
 ubyte objs_length = 0;
@@ -158,7 +155,6 @@ ENTITY removeEntity(const int index) {
         PUTS("WARN: POS 0 (player) removed.");
     }
     ENTITY removed = allEntities[index];
-    PUTI(PLAYER_DATA->projectile_count);
     if (removed.type == PROJECTILE) {
         PLAYER_DATA->projectile_count--;
     }

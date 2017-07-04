@@ -1,3 +1,6 @@
+#ifndef GFX_HELPER_H
+#define GFX_HELPER_H
+
 extern const unsigned char fontdata_6x8[12288];
 
 // FW functions are much faster because they do direct DMA and can do full word transfers
@@ -72,4 +75,4 @@ INLINE int drawInt(int row, int col, int num, int places, u16 color) {
     return drawString(row, col, toFill, color);
 }
 
-
+#endif

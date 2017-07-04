@@ -1,10 +1,10 @@
 #include "myLib.h"
-#include "memmap.h"
 #include "interrupts.h"
 #include "input.h"
 #include "random.h"
 #include "gfx_helper.h"
 #include "entities.h"
+#include "game_state.h"
 #include "game.h"
 
 #include "player_sprites.h"
@@ -147,8 +147,8 @@ INLINE void draw()
                     sqran(frameCounter);
                     redrawBG2(70, 8);
 
-                    /* initState(RUNNER_TRANSITION); */
-                    initState(SHOOTER_TRANSITION);
+                    initState(RUNNER_TRANSITION);
+//                    initState(SHOOTER_TRANSITION);
                 }
                 break;
             case RUNNER_TRANSITION:

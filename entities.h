@@ -1,4 +1,6 @@
 #include "sprites.h"
+#include "random.h"
+#include "gfx_helper.h"
 
 #define PLAYER_HEIGHT       32
 #define PLAYER_WIDTH        16
@@ -51,6 +53,7 @@
 #define GROUND_OFFSET (SCREEN_HEIGHT - 16)
 #define DIR_LEFT            (-1)
 #define DIR_RIGHT           (1)
+#define ENT_MAX_INVULN_FRAMES 30
 
 #define ENT_X(_ent)         sext9(BF_GET((_ent)->obj->attr1, ATTR1_X))
 #define ENT_Y(_ent)         (BF_GET((_ent)->obj->attr0, ATTR0_Y))
@@ -98,7 +101,7 @@ typedef struct ENTITY {
 } ENTITY;
 
 ENTITY* addEntity(const uint id, ubyte x, ubyte y, enum ENTITY_TYPE type);
-void clearEntities();
+void clearEntities(int firstIdx);
 ENTITY removeEntity(int i);
 void gravity(ENTITY* e);
 void tickEntityAnimations();
@@ -176,13 +179,12 @@ INLINE void setDead(ENTITY* e) {
     /* BF_SET(e->obj->attr1, TRUE, ATTR1_VFLIP); */
 }
 
-INLINE short groundDist(ENTITY* e) {
+INLINE int groundDist(ENTITY* e) {
     const int y = BF_GET(e->obj->attr0, ATTR0_Y);
     return GROUND_OFFSET - (y + entity_attrs[e->type].height);
 }
 
 ENTITY allEntities[ENTITIES_LEN];
 extern ubyte objs_length;
-extern ubyte gravityAffected_length;
 
 extern OBJ_ATTR _setupObj(const uint id, ubyte x, ubyte y, enum ENTITY_TYPE type);
