@@ -6,6 +6,7 @@ typedef unsigned char bool;
 typedef unsigned char uint8_t;
 typedef signed char int8_t;
 typedef unsigned int uint32_t;
+typedef int int32_t;
 
 typedef unsigned short uint16_t;
 typedef signed short int16_t;
@@ -13,6 +14,8 @@ typedef signed short int16_t;
 typedef volatile uint16_t vu16;
 typedef volatile int16_t vs16;
 typedef volatile uint32_t vu32;
+
+typedef int8_t tribool;
 
 typedef void (*fnptr)(void);
 

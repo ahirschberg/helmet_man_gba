@@ -14,7 +14,6 @@ bool game_ee_mode = FALSE;
 uint8_t hud_mode = 0;
 
 // runner
-int8_t scrollerDX = 0;
 
 void reset() {
     score = 0;
@@ -43,6 +42,8 @@ void setPaused(bool isPaused) {
 void initState(const enum GAME_STATE state) {
     PLAYER_ENTITY->f_invuln = 0; // prevent weird things from happening between states
 
+    Difficulty_init(state);
+
     switch(state) {
         case START_SCREEN:
             reset();
@@ -55,7 +56,6 @@ void initState(const enum GAME_STATE state) {
             break;
         case RUNNER_TRANSITION:
             clearEntities(1);
-            Difficulty_initNext(RUNNER, score);
             break;
         case RUNNER:
             clearEntities(1);
@@ -64,32 +64,26 @@ void initState(const enum GAME_STATE state) {
 
             setRunning(PLAYER_ENTITY, 0);
             setFacing(PLAYER_ENTITY->obj, 1);
+            Difficulty_next(score);
 
-            // FIXME
-            scrollerDX = -7;
-//            else if (difficulty_inc < 5) scrollerDX = -8;
-//            else scrollerDX = -9;
-
-            PLAYER_ENTITY->dx = ((int8_t) -1) * scrollerDX;
+            PLAYER_ENTITY->dx = ((int8_t) -1) * runner_conf->scroller_dx;
             break;
         case SHOOTER_TRANSITION:
             clearEntities(1);
             hud_mode = 2; redrawHUD();
-            Difficulty_initNext(SHOOTER, score);
             PLAYER_ENTITY->health = 5;
             setWalking(PLAYER_ENTITY, DIR_RIGHT);
-            scrollerDX = 0;
             break;
         case SHOOTER:
             PLAYER_ENTITY->state=STANDING;
             PLAYER_ENTITY->dx = 0;
             ENEMY_DATA->spawn_wave_id = 0;
             ENEMY_DATA->ticks_until_next_spawn = 10;
+            Difficulty_next(score);
             break;
         case GAME_OVER:
             hud_mode = 0;
             PLAYER_ENTITY->state = STANDING;
-            scrollerDX = 0;
             drawRectFW(0, SCREEN_HEIGHT, BYTETOWORD(WHITE));
             break;
         case GAME_OVER_NODRAW:
@@ -116,13 +110,13 @@ uint16_t color = BLACK;
 uint8_t last_player_health = -1;
 bool ee_longTitle = FALSE;
 
-INLINE ENTITY* addTallEnemy(int x) {
+INLINE ENTITY* addTallEnemy(uint8_t x) {
     register ENTITY* te = addEntity(TALL_ENEMY_STAND_TID, x, GROUND_OFFSET, TALL_ENEMY);
     te->health = 3;
     return te;
 }
 
-INLINE ENTITY* addShortEnemy(int x) {
+INLINE ENTITY* addShortEnemy(uint8_t x) {
     register ENTITY* se = addEntity(SHORT_ENEMY_STAND_TID, x, GROUND_OFFSET, SHORT_ENEMY);
     se->health = 1;
     return se;
@@ -130,9 +124,9 @@ INLINE ENTITY* addShortEnemy(int x) {
 
 void spawnEnemies(int roomLevel, int spawn_wave) {
     // Uncomment for a debug fight
-//    if (spawn_wave == 1) {
-//        for (int i = 0; i < 10; ++i) {
-//            addShortEnemy(0);
+//    if (spawn_wave == 0) {
+//        for (int i = 0; i < 3; ++i) {
+//            addTallEnemy(SWAP_SIDE(1));
 //        }
 //    }
 //    return;
@@ -216,7 +210,7 @@ void tickGame(const uint32_t frame) {
                     drawFloor(1);
                 }
                 if (--rnum <= 0) {
-                    if (objs_length < 4) {
+                    if (objs_length < 10) {
                         const int ran = qran_range(0, 3);
                         switch(ran) {
                             case 0:
@@ -234,8 +228,7 @@ void tickGame(const uint32_t frame) {
                                 addEntity(PLAYER_HURT_TID, SCREEN_WIDTH, GROUND_OFFSET, OBSTACLE_ROCK);
                         }
                     }
-                    // TODO: make this more tuned to difficulty
-                    rnum = qran_range(100, 150);
+                    rnum = qran_range(runner_conf->obstacle_spawn_delay_lower, runner_conf->obstacle_spawn_delay_upper);
                 }
             }
             break;
@@ -304,7 +297,7 @@ bool hurtEntity(ENTITY* e, int8_t damage, int8_t dir) {
         return TRUE;
     }
     e->health -= damage;
-    e->f_invuln = ENT_MAX_INVULN_FRAMES;
+    e->f_invuln = attrs(e).invuln_max_frames;
     return FALSE;
 }
 
@@ -320,7 +313,6 @@ int decrementInvulnFrames(ENTITY* e) {
 
 INLINE void shooter_checkPlayerCollisions() {
     int8_t playerHurt_tribool = 0;
-    PUTI(PLAYER_ENTITY->f_invuln);
 
     int engager_i = 0;
     bool player_has_hurt_enemy = FALSE;
@@ -423,7 +415,7 @@ void tickEntities(const uint32_t count) {
                     BF_SET(curr->obj->attr1, 0, ATTR1_X);
                     stoppedWraparound = TRUE;
                 } else {
-                    OBJ_DX(curr->obj->attr1, ((curr)->dx + scrollerDX));
+                    OBJ_DX(curr->obj->attr1, ((curr)->dx + runner_conf->scroller_dx));
                 }
 
                 // instead of stopping wraparound on projectiles, just remove them
@@ -431,7 +423,7 @@ void tickEntities(const uint32_t count) {
                     removeEntity(i--);
                 }
             } else {
-                OBJ_DX(curr->obj->attr1, ((curr)->dx + scrollerDX));
+                OBJ_DX(curr->obj->attr1, ((curr)->dx + runner_conf->scroller_dx));
             }
 
             int8_t ent_action_rand = qran_range(0,20);

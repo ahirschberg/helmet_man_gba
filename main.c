@@ -147,11 +147,9 @@ INLINE void draw()
                     sqran(frameCounter);
                     redrawBG2(70, 8);
 
-                    initState(RUNNER_TRANSITION);
-//                    initState(SHOOTER_TRANSITION);
+//                    initState(RUNNER_TRANSITION);
+                    initState(SHOOTER_TRANSITION);
                 }
-                break;
-            case RUNNER_TRANSITION:
                 break;
             case RUNNER:
                 if ((key_hit(KEY_UP) || key_hit(KEY_A)) && !playerEntity->isJumping) {
@@ -170,7 +168,7 @@ INLINE void draw()
                 if ((key_hit(KEY_UP) || key_hit(KEY_A)) && !playerEntity->isJumping) {
                     setJumping(playerEntity, 8);
                 }
-                const int horiz_input = key_tri_horz();
+                const tribool horiz_input = key_tri_horz();
                 if (horiz_input != 0) {
                     setWalkingWeak(playerEntity, horiz_input);
                 } else {

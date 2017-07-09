@@ -61,7 +61,7 @@ INLINE int drawString(int row, int col, char *str, uint16_t color)
     return col;
 }
 
-INLINE void _digits(int num, char* toFill, int fill_len) {
+INLINE void _digits(uint32_t num, char* toFill, int fill_len) {
     toFill[fill_len - 1] = '\0';
     for (int i = fill_len - 2; i >= 0; i--) {
         toFill[i] = '0' + (num - (num / 10) * 10);

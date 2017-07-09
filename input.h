@@ -61,14 +61,14 @@ enum eKeyIndex
 };
 
 // --- TRISTATES ---
-INLINE int key_tri_horz()       // right/left : +/-
+INLINE tribool key_tri_horz()       // right/left : +/-
 {   return bit_tribool(__key_curr, KI_RIGHT, KI_LEFT);  }
 
-INLINE int key_tri_vert()       // down/up : +/-
+INLINE tribool key_tri_vert()       // down/up : +/-
 {   return bit_tribool(__key_curr, KI_DOWN, KI_UP);     }
 
-INLINE int key_tri_shoulder()   // R/L : +/-
+INLINE tribool key_tri_shoulder()   // R/L : +/-
 {   return bit_tribool(__key_curr, KI_R, KI_L);         }
 
-INLINE int key_tri_fire()       // B/A : -/+
+INLINE tribool key_tri_fire()       // B/A : -/+
 {   return bit_tribool(__key_curr, KI_A, KI_B);         }

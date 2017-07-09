@@ -69,6 +69,7 @@ typedef struct ENTITY_ATTRS {
     const uint8_t tile_shape;
     const uint8_t tile_size;
     const uint8_t default_palette;
+    const uint8_t invuln_max_frames;
 } ENTITY_ATTRS;
 
 enum ENTITY_TYPE {
@@ -76,13 +77,13 @@ enum ENTITY_TYPE {
 };
 
 static const ENTITY_ATTRS entity_attrs[] = { 
-    {PLAYER_HEIGHT, PLAYER_WIDTH, TRUE, SPRITE_TALL, SPRITE_SIZE_LG, 0},
-    {8, 8, FALSE, SPRITE_SQUARE, SPRITE_SIZE_SM, 1},
-    {PLAYER_HEIGHT, PLAYER_WIDTH, TRUE, SPRITE_TALL, SPRITE_SIZE_LG, 2},
-    {16, 16, TRUE, SPRITE_SQUARE, SPRITE_SIZE_MD, 3},
-    {16, 16, TRUE, SPRITE_SQUARE, SPRITE_SIZE_MD, 4},
-    {PLAYER_HEIGHT, 16, TRUE, SPRITE_TALL, SPRITE_SIZE_LG, 5},
-    {16, 64, TRUE, SPRITE_WIDE, SPRITE_SIZE_LG, 6},
+    {PLAYER_HEIGHT, PLAYER_WIDTH, TRUE, SPRITE_TALL, SPRITE_SIZE_LG, .default_palette = 0, .invuln_max_frames = 30},
+    {8, 8, FALSE, SPRITE_SQUARE, SPRITE_SIZE_SM, .default_palette = 1},
+    {PLAYER_HEIGHT, PLAYER_WIDTH, TRUE, SPRITE_TALL, SPRITE_SIZE_LG, .default_palette = 2, .invuln_max_frames = 1},
+    {16, 16, TRUE, SPRITE_SQUARE, SPRITE_SIZE_MD, .default_palette = 3, .invuln_max_frames = 1},
+    {16, 16, TRUE, SPRITE_SQUARE, SPRITE_SIZE_MD, .default_palette = 4},
+    {PLAYER_HEIGHT, 16, TRUE, SPRITE_TALL, SPRITE_SIZE_LG, .default_palette = 5},
+    {16, 64, TRUE, SPRITE_WIDE, SPRITE_SIZE_LG, .default_palette = 6},
 };
 
 #define attrs(e)    (entity_attrs[(e)->type])
@@ -128,26 +129,26 @@ INLINE void setEntityState(ENTITY* e, enum ENT_STATE newState) {
     } // else do nothing
 }
 
-INLINE void setWalking(ENTITY* e, int8_t dir) {
+INLINE void setWalking(ENTITY* e, tribool dir) {
     setEntityState(e, WALKING);
     setFacing(e->obj, dir);
     e->dx = 3 * dir;
 }
 
 // set walking, but only if the player is not in a higher state (ie hurt)
-INLINE void setWalkingWeak(ENTITY* e, int8_t dir) {
+INLINE void setWalkingWeak(ENTITY* e, tribool dir) {
     if (e->state < WALKING) setWalking(e, dir);
     else { // duplicate from setWalking
         setFacing(e->obj, dir);
         e->dx = 3 * dir;
     }
 }
-INLINE void setRunning(ENTITY* e, int8_t dir) {
+INLINE void setRunning(ENTITY* e, tribool dir) {
     setEntityState(e, RUNNING);
     setFacing(e->obj, dir);
     e->dx = 7 * dir;
 }
-INLINE void setJumping(ENTITY* e, int8_t dy) {
+INLINE void setJumping(ENTITY* e, tribool dy) {
     e->isJumping = TRUE;
     e->dy = dy;
 }
@@ -158,7 +159,7 @@ INLINE void setStanding(ENTITY* e) {
 
 #define HURT_DX 4
 
-INLINE void setHurt(ENTITY* e, int8_t dir) {
+INLINE void setHurt(ENTITY* e, tribool dir) {
     setEntityState(e, HURT);
     e->dx = dir * HURT_DX;
     e->dy = 2;
