@@ -124,12 +124,12 @@ INLINE ENTITY* addShortEnemy(uint8_t x) {
 
 void spawnEnemies(int roomLevel, int spawn_wave) {
     // Uncomment for a debug fight
-//    if (spawn_wave == 0) {
-//        for (int i = 0; i < 3; ++i) {
-//            addTallEnemy(SWAP_SIDE(1));
-//        }
-//    }
-//    return;
+//  if (spawn_wave == 0) {
+//      for (int i = 0; i < 80; ++i) {
+//          addTallEnemy(SWAP_SIDE(1));
+//      }
+//  }
+//  return;
     switch (roomLevel) {
         case 0:
             if (spawn_wave < 3) addTallEnemy(0);
@@ -278,7 +278,7 @@ INLINE void runner_checkPlayerCollisions() {
 
         const ENTITY_ATTRS obstacle_attrs = attrs(allEntities + i);
         const int8_t fix_sprite_height_a_little = (allEntities[i].type == OBSTACLE_SHEET) ? 0 : 4;
-        if (player_y < obstacle_attrs.height - fix_sprite_height_a_little && player_x < ent_x + obstacle_attrs.width / 2 // why?? 
+        if (player_y < obstacle_attrs.height - fix_sprite_height_a_little && player_x < ent_x + obstacle_attrs.width / 2 // why??
                 && player_x + player_width - 5 > ent_x) {
             gameOver();
         }
@@ -330,6 +330,7 @@ INLINE void shooter_checkPlayerCollisions() {
         const uint8_t engager_height = attrs(engager).height;
 
         int i = 1;
+        // FIXME: loop of hell
         while (i < objs_length) {
             if (allEntities[i].isDead || (allEntities[i].type == PROJECTILE) || allEntities[i].type == PLAYER) {
                 i++;
@@ -343,13 +344,15 @@ INLINE void shooter_checkPlayerCollisions() {
             const uint8_t eheight = attrs.height;
             const uint8_t ewidth  = attrs.width;
 
+
             if (engager_type == PLAYER) {
                 const uint32_t wider = (ewidth > engager_width) ? ewidth : engager_width;
                 const uint32_t taller = (eheight > engager_height) ? eheight : engager_height;
 
                 if (engager_y - ent_y > engager_width - 8
                         && IABS(engager_x - ent_x) <= wider + 5  // make the player head jumping more forgiving
-                        && IABS(engager_y - ent_y) <= PLAYER_HEIGHT) {
+                        && IABS(engager_y - ent_y) <= PLAYER_HEIGHT
+                        && engager->dy < 0) {
 
                     // prevent the player from jumping on multiple enemies in the same frame, but still give them the
                     // jump boost
@@ -360,6 +363,8 @@ INLINE void shooter_checkPlayerCollisions() {
                     }
                     if (allEntities[i].type == SHORT_ENEMY) engager->dy = 6;
                     else engager->dy = 4;
+
+                    engager->f_invuln = 10;
                 } else if (IABS(engager_x - ent_x) < wider
                         && IABS(engager_y - ent_y) < taller) {
 
@@ -382,6 +387,14 @@ INLINE void shooter_checkPlayerCollisions() {
                             }
                         }
                         removeEntity(engager_i--);
+                        // missing a break statement was causing tons of bugs.
+                        // Was causing all the stored variables for the
+                        // projectile to be used with another entity in its
+                        // place, causing double hits.
+                        // engager_type != engager->type (lol)
+                        // A symptom of the fact that this loop is disgusting
+                        // and needs refactor.
+                        break;
                     }
                 }
             }
@@ -415,7 +428,7 @@ void tickEntities(const uint32_t count) {
                     BF_SET(curr->obj->attr1, 0, ATTR1_X);
                     stoppedWraparound = TRUE;
                 } else {
-                    OBJ_DX(curr->obj->attr1, ((curr)->dx + runner_conf->scroller_dx));
+                    OBJ_DX(curr->obj->attr1, curr->dx);
                 }
 
                 // instead of stopping wraparound on projectiles, just remove them
