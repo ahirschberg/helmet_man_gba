@@ -41,9 +41,7 @@ void setPaused(bool isPaused) {
 
 void initState(const enum GAME_STATE state) {
     PLAYER_ENTITY->f_invuln = 0; // prevent weird things from happening between states
-
-    Difficulty_init(state);
-
+    Difficulty_init(state, score);
     switch(state) {
         case START_SCREEN:
             reset();
@@ -64,7 +62,6 @@ void initState(const enum GAME_STATE state) {
 
             setRunning(PLAYER_ENTITY, 0);
             setFacing(PLAYER_ENTITY->obj, 1);
-            Difficulty_next(score);
 
             PLAYER_ENTITY->dx = ((int8_t) -1) * runner_conf->scroller_dx;
             break;
@@ -79,7 +76,6 @@ void initState(const enum GAME_STATE state) {
             PLAYER_ENTITY->dx = 0;
             ENEMY_DATA->spawn_wave_id = 0;
             ENEMY_DATA->ticks_until_next_spawn = 10;
-            Difficulty_next(score);
             break;
         case GAME_OVER:
             hud_mode = 0;
@@ -162,7 +158,7 @@ void spawnEnemies(int roomLevel, int spawn_wave) {
     }
 }
 
-uint8_t rock_lobster = 0; // FIXME move to game_state with descriptive name.
+uint8_t which_rock_tid = 0;
 void tickGame(const uint32_t frame) {
     const uint8_t frame4s = frame & 0xFF;
     switch(gameState) {
@@ -202,6 +198,7 @@ void tickGame(const uint32_t frame) {
             break;
         case RUNNER:
             if (Difficulty_shouldTransition(score)) {
+                Difficulty_next(score);
                 initState(SHOOTER_TRANSITION);
             } else {
                 if ((frame & 0xF) == 0) {
@@ -210,12 +207,12 @@ void tickGame(const uint32_t frame) {
                     drawFloor(1);
                 }
                 if (--rnum <= 0) {
-                    if (objs_length < 10) {
+                    if (objs_length < runner_conf->max_objs) {
                         const int ran = qran_range(0, 3);
                         switch(ran) {
                             case 0:
                                 ;
-                                const uint32_t rock_tid = (rock_lobster++ & 1) ? OBSTACLE_ROCK1_TID : OBSTACLE_ROCK2_TID;
+                                const uint32_t rock_tid = (which_rock_tid++ & 1) ? OBSTACLE_ROCK1_TID : OBSTACLE_ROCK2_TID;
                                 addEntity(rock_tid, SCREEN_WIDTH, GROUND_OFFSET, OBSTACLE_ROCK);
                                 break;
                             case 1:
@@ -239,6 +236,7 @@ void tickGame(const uint32_t frame) {
             break;
         case SHOOTER:
             if (Difficulty_shouldTransition(score)) {
+                Difficulty_next(score);
                 initState(RUNNER_TRANSITION);
             } else {
                 if ((frame & 3) == 0 && PLAYER_ENTITY->health != last_player_health) {
