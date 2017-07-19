@@ -1,12 +1,9 @@
 #include "myLib.h"
-#include "random.h"
-#include "gfx_helper.h"
 #include "entities.h"
-#include "game.h"
-#include "player.h"
+#include "game_state.h"
 
 ENTITY allEntities[];
-ubyte objs_length = 0;
+uint8_t objs_length = 0;
 
 INLINE void tick_entity_anim(ENTITY* e,
         const int E_STAND_TID,
@@ -113,7 +110,7 @@ void tickEntityAnimations() {
 
 void gravity(ENTITY* e) {
     volatile OBJ_ATTR* obj = e->obj;
-    const byte g = 1;
+    const int8_t g = 1;
 
     if (e->isDead) {
         e->dy = e->dy - g;
@@ -132,7 +129,7 @@ void gravity(ENTITY* e) {
         OBJ_DY(*obj, ~(e->dy)+1);
     }
 }
-OBJ_ATTR _setupObj(const uint id, ubyte x, ubyte y, enum ENTITY_TYPE type) {
+OBJ_ATTR _setupObj(const uint32_t id, uint8_t x, uint8_t y, enum ENTITY_TYPE type) {
     volatile OBJ_ATTR obj;
     obj.attr0 = BF_PREP(y, ATTR0_Y) | BF_PREP(entity_attrs[type].tile_shape, ATTR0_SHAPE);
     obj.attr1 = BF_PREP(x, ATTR1_X) | BF_PREP(entity_attrs[type].tile_size, ATTR1_SIZE);
@@ -149,7 +146,7 @@ ENTITY* _setupEntity(OBJ_ATTR obj, enum ENTITY_TYPE type) {
     return allEntities + (objs_length - 1);
 }
 
-ENTITY* addEntity(const uint id, ubyte x, ubyte y, enum ENTITY_TYPE type) {
+ENTITY* addEntity(const uint32_t id, uint8_t x, uint8_t y, enum ENTITY_TYPE type) {
     return _setupEntity(_setupObj(id, x, y - entity_attrs[type].height, type), type);
 }
 
@@ -158,7 +155,6 @@ ENTITY removeEntity(const int index) {
         PUTS("WARN: POS 0 (player) removed.");
     }
     ENTITY removed = allEntities[index];
-    PUTI(PLAYER_DATA->projectile_count);
     if (removed.type == PROJECTILE) {
         PLAYER_DATA->projectile_count--;
     }
@@ -182,7 +178,7 @@ void clearEntities(int first_idx) {
 void addProjectileFrom(ENTITY* e) {
     if (PLAYER_DATA->projectile_count > 2) return; // limit fire rate
     else {
-        const byte facing = getFacing(e->obj);
+        const int8_t facing = getFacing(e->obj);
         ENTITY* proj = addEntity(PROJECTILE_TID, facing * 8 + ENT_X(e) + attrs(e).width / 2, ENT_Y(e) + attrs(e).height/2 + 8, PROJECTILE);
         setFacing(proj->obj, facing);
         proj->dx = facing * 5;

@@ -1,18 +1,21 @@
+#ifndef GFX_HELPER_H
+#define GFX_HELPER_H
+
 extern const unsigned char fontdata_6x8[12288];
 
 // FW functions are much faster because they do direct DMA and can do full word transfers
 
-INLINE void drawRect(int r, int c, int width, int height, volatile const u16* color) {
+INLINE void drawRect(int r, int c, int width, int height, volatile const uint16_t* color) {
     for (int i = 0; i < height; i++) {
         DMA_TRANSFER(VIDEOBUFF + OFFSET(r+i, c), color, width, 3, DMA_ENABLE | DMA_SRC_FIXED);
     }
 }
 
-INLINE void drawRectFW(int r, int height, volatile const u32 dcolor) {
+INLINE void drawRectFW(int r, int height, volatile const uint32_t dcolor) {
     DMA_TRANSFER(OFFSET(r, VIDEOBUFF), &dcolor, (SCREEN_WIDTH * height) / 2, 3, DMA_ENABLE | DMA_SRC_FIXED | DMA_CS_32);
 }
 
-INLINE void drawImage3(int r, int c, int width, int height, const u16* image)
+INLINE void drawImage3(int r, int c, int width, int height, const uint16_t* image)
 {
     for (int i = 0; i < height; i++) {
         if (r + i < 0) continue; // do not draw out of bounds! fixes flicker near top of screen
@@ -21,16 +24,16 @@ INLINE void drawImage3(int r, int c, int width, int height, const u16* image)
     }
 }
 
-INLINE void drawImageFW(int r, int height, int imgr, const u16* image) {
+INLINE void drawImageFW(int r, int height, int imgr, const uint16_t* image) {
     DMA_TRANSFER(OFFSET(r, VIDEOBUFF), OFFSET(imgr, image), (SCREEN_WIDTH * height) / 2, 3, DMA_ENABLE | DMA_CS_32);
 }
 // is there a better way to inline these??
-INLINE void setPixel(int row, int col, u16 color)
+INLINE void setPixel(int row, int col, uint16_t color)
 {
     VIDEOBUFF[OFFSET(row, col)] = color;
 }
 
-INLINE void drawChar(int row, int col, char ch, u16 color)
+INLINE void drawChar(int row, int col, char ch, uint16_t color)
 {
 	for(int r=0; r<8; r++)
 	{
@@ -44,7 +47,7 @@ INLINE void drawChar(int row, int col, char ch, u16 color)
 	}
 }
 
-INLINE int drawString(int row, int col, char *str, u16 color)
+INLINE int drawString(int row, int col, char *str, uint16_t color)
 {
 	while(*str)
 	{
@@ -58,7 +61,7 @@ INLINE int drawString(int row, int col, char *str, u16 color)
     return col;
 }
 
-INLINE void _digits(int num, char* toFill, int fill_len) {
+INLINE void _digits(uint32_t num, char* toFill, int fill_len) {
     toFill[fill_len - 1] = '\0';
     for (int i = fill_len - 2; i >= 0; i--) {
         toFill[i] = '0' + (num - (num / 10) * 10);
@@ -66,10 +69,10 @@ INLINE void _digits(int num, char* toFill, int fill_len) {
     }
 }
 
-INLINE int drawInt(int row, int col, int num, int places, u16 color) {
+INLINE int drawInt(int row, int col, int num, int places, uint16_t color) {
     char toFill[places + 1];
     _digits(num, toFill, places + 1);
     return drawString(row, col, toFill, color);
 }
 
-
+#endif

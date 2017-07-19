@@ -1,4 +1,6 @@
 #include "sprites.h"
+#include "random.h"
+#include "gfx_helper.h"
 
 #define PLAYER_HEIGHT       32
 #define PLAYER_WIDTH        16
@@ -51,6 +53,7 @@
 #define GROUND_OFFSET (SCREEN_HEIGHT - 16)
 #define DIR_LEFT            (-1)
 #define DIR_RIGHT           (1)
+#define ENT_MAX_INVULN_FRAMES 30
 
 #define ENT_X(_ent)         sext9(BF_GET((_ent)->obj->attr1, ATTR1_X))
 #define ENT_Y(_ent)         (BF_GET((_ent)->obj->attr0, ATTR0_Y))
@@ -60,12 +63,13 @@ enum ENT_STATE {
 };
 
 typedef struct ENTITY_ATTRS {
-    const ubyte height;
-    const ubyte width;
+    const uint8_t height;
+    const uint8_t width;
     const bool gravityEnabled;
-    const ubyte tile_shape;
-    const ubyte tile_size;
-    const ubyte default_palette;
+    const uint8_t tile_shape;
+    const uint8_t tile_size;
+    const uint8_t default_palette;
+    const uint8_t invuln_max_frames;
 } ENTITY_ATTRS;
 
 enum ENTITY_TYPE {
@@ -73,13 +77,13 @@ enum ENTITY_TYPE {
 };
 
 static const ENTITY_ATTRS entity_attrs[] = { 
-    {PLAYER_HEIGHT, PLAYER_WIDTH, TRUE, SPRITE_TALL, SPRITE_SIZE_LG, 0},
-    {8, 8, FALSE, SPRITE_SQUARE, SPRITE_SIZE_SM, 1},
-    {PLAYER_HEIGHT, PLAYER_WIDTH, TRUE, SPRITE_TALL, SPRITE_SIZE_LG, 2},
-    {16, 16, TRUE, SPRITE_SQUARE, SPRITE_SIZE_MD, 3},
-    {16, 16, TRUE, SPRITE_SQUARE, SPRITE_SIZE_MD, 4},
-    {PLAYER_HEIGHT, 16, TRUE, SPRITE_TALL, SPRITE_SIZE_LG, 5},
-    {16, 64, TRUE, SPRITE_WIDE, SPRITE_SIZE_LG, 6},
+    {PLAYER_HEIGHT, PLAYER_WIDTH, TRUE, SPRITE_TALL, SPRITE_SIZE_LG, .default_palette = 0, .invuln_max_frames = 30},
+    {8, 8, FALSE, SPRITE_SQUARE, SPRITE_SIZE_SM, .default_palette = 1},
+    {PLAYER_HEIGHT, PLAYER_WIDTH, TRUE, SPRITE_TALL, SPRITE_SIZE_LG, .default_palette = 2, .invuln_max_frames = 1},
+    {16, 16, TRUE, SPRITE_SQUARE, SPRITE_SIZE_MD, .default_palette = 3, .invuln_max_frames = 1},
+    {16, 16, TRUE, SPRITE_SQUARE, SPRITE_SIZE_MD, .default_palette = 4},
+    {PLAYER_HEIGHT, 16, TRUE, SPRITE_TALL, SPRITE_SIZE_LG, .default_palette = 5},
+    {16, 64, TRUE, SPRITE_WIDE, SPRITE_SIZE_LG, .default_palette = 6},
 };
 
 #define attrs(e)    (entity_attrs[(e)->type])
@@ -87,18 +91,18 @@ static const ENTITY_ATTRS entity_attrs[] = {
 typedef struct ENTITY {
     volatile OBJ_ATTR* obj;
     enum ENTITY_TYPE type;
-    byte dy;
-    byte dx;
+    int8_t dy;
+    int8_t dx;
     enum ENT_STATE state;
     bool isJumping;
     bool isDead;
-    ubyte lastAnimatedTile;
-    ubyte health;
-    ubyte f_invuln;
+    uint8_t lastAnimatedTile;
+    uint8_t health;
+    uint8_t f_invuln;
 } ENTITY;
 
-ENTITY* addEntity(const uint id, ubyte x, ubyte y, enum ENTITY_TYPE type);
-void clearEntities();
+ENTITY* addEntity(const uint32_t id, uint8_t x, uint8_t y, enum ENTITY_TYPE type);
+void clearEntities(int firstIdx);
 ENTITY removeEntity(int i);
 void gravity(ENTITY* e);
 void tickEntityAnimations();
@@ -113,7 +117,7 @@ INLINE int getFacing(volatile OBJ_ATTR* obj) {
     return flipped ? -1 : 1;
 }
 
-INLINE void setFacing(volatile OBJ_ATTR* obj, byte dir) {
+INLINE void setFacing(volatile OBJ_ATTR* obj, int8_t dir) {
     const bool toFlip = (dir == -1) ? TRUE : FALSE;
     BF_SET(obj->attr1, toFlip, ATTR1_HFLIP);
 }
@@ -125,26 +129,26 @@ INLINE void setEntityState(ENTITY* e, enum ENT_STATE newState) {
     } // else do nothing
 }
 
-INLINE void setWalking(ENTITY* e, byte dir) {
+INLINE void setWalking(ENTITY* e, tribool dir) {
     setEntityState(e, WALKING);
     setFacing(e->obj, dir);
     e->dx = 3 * dir;
 }
 
 // set walking, but only if the player is not in a higher state (ie hurt)
-INLINE void setWalkingWeak(ENTITY* e, byte dir) {
+INLINE void setWalkingWeak(ENTITY* e, tribool dir) {
     if (e->state < WALKING) setWalking(e, dir);
     else { // duplicate from setWalking
         setFacing(e->obj, dir);
         e->dx = 3 * dir;
     }
 }
-INLINE void setRunning(ENTITY* e, byte dir) {
+INLINE void setRunning(ENTITY* e, tribool dir) {
     setEntityState(e, RUNNING);
     setFacing(e->obj, dir);
     e->dx = 7 * dir;
 }
-INLINE void setJumping(ENTITY* e, byte dy) {
+INLINE void setJumping(ENTITY* e, tribool dy) {
     e->isJumping = TRUE;
     e->dy = dy;
 }
@@ -155,7 +159,7 @@ INLINE void setStanding(ENTITY* e) {
 
 #define HURT_DX 4
 
-INLINE void setHurt(ENTITY* e, byte dir) {
+INLINE void setHurt(ENTITY* e, tribool dir) {
     setEntityState(e, HURT);
     e->dx = dir * HURT_DX;
     e->dy = 2;
@@ -176,13 +180,12 @@ INLINE void setDead(ENTITY* e) {
     /* BF_SET(e->obj->attr1, TRUE, ATTR1_VFLIP); */
 }
 
-INLINE short groundDist(ENTITY* e) {
+INLINE int groundDist(ENTITY* e) {
     const int y = BF_GET(e->obj->attr0, ATTR0_Y);
     return GROUND_OFFSET - (y + entity_attrs[e->type].height);
 }
 
 ENTITY allEntities[ENTITIES_LEN];
-extern ubyte objs_length;
-extern ubyte gravityAffected_length;
+extern uint8_t objs_length;
 
-extern OBJ_ATTR _setupObj(const uint id, ubyte x, ubyte y, enum ENTITY_TYPE type);
+extern OBJ_ATTR _setupObj(const uint32_t id, uint8_t x, uint8_t y, enum ENTITY_TYPE type);

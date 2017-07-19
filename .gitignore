@@ -3,3 +3,6 @@
 *.elf
 tags
 *.gba
+CMakeLists.txt
+.idea/
+cmake-build-debug/

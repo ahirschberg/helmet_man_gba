@@ -12,7 +12,7 @@ PROGNAME = CoolGame
 # The object files you want to compile into your program
 # This should be a space (SPACE!) separated list of .o files
 OFILES = main.o sprites.o entities.o input.o game.o random.o font.o \
-		 player.o \
+		 game_state.o difficulty.o \
 		 player_sprites.o tall_enemy_sprites.o \
 		 projectile_sprites.o background_img.o \
 		 obstacle_tall.o obstacle_rocks.o obstacle_wide.o \
@@ -22,7 +22,8 @@ OFILES = main.o sprites.o entities.o input.o game.o random.o font.o \
 # The header files you have created.
 # This is necessary to determine when to recompile for files.
 # This should be a space (SPACE!) separated list of .h files
-HFILES = sprites.h entities.h input.h game.h gfx_helper.h random.h player.h \
+HFILES = sprites.h entities.h input.h game.h gfx_helper.h random.h game_state.h \
+		 difficulty.h \
 		 player_sprites.h obstacle_sprites.h tall_enemy_sprites.h \
 		 projectile_sprites.h background_img.h \
 		 short_enemy_sprites.h random_data.h tile_scroller.h game_over.h

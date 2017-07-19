@@ -1,16 +1,21 @@
+#ifndef MYLIB_H
+#define MYLIB_H
+
+
 typedef unsigned char bool;
-typedef unsigned char ubyte;
-typedef signed char byte;
-typedef unsigned short ushort;
-typedef unsigned int uint;
+typedef unsigned char uint8_t;
+typedef signed char int8_t;
+typedef unsigned int uint32_t;
+typedef int int32_t;
 
-typedef unsigned short u16;
-typedef signed short s16;
-typedef unsigned int u32;
+typedef unsigned short uint16_t;
+typedef signed short int16_t;
 
-typedef volatile u16 vu16;
-typedef volatile s16 vs16;
-typedef volatile u32 vu32;
+typedef volatile uint16_t vu16;
+typedef volatile int16_t vs16;
+typedef volatile uint32_t vu32;
+
+typedef int8_t tribool;
 
 typedef void (*fnptr)(void);
 
@@ -28,7 +33,7 @@ typedef struct DMA_REC
 {
     const void *src;
     void *dst;
-    u32 cnt;
+    uint32_t cnt;
 } DMA_REC;
 // surround in do while for semicolon protection
 #define DMA_TRANSFER(_dst, _src, count, ch, mode) \
@@ -64,9 +69,11 @@ typedef struct DMA_REC
 #define SCREEN_HEIGHT 160
 #define SCREEN_WIDTH 240
 
-#define IABS(a) ((uint) ((a) < 0 ? ~(a)+1 : (a) ))
+#define IABS(a) ((uint32_t) ((a) < 0 ? ~(a)+1 : (a) ))
 #define TRIBOOL(a) (a == 0 ? a : (a < 0 ? -1 : 1))
 #define BYTETOWORD(val16) ((val16) << 16 | (val16))
+
+#include "gfx_helper.h"
 
 #define PUTI(i) do {\
     drawRectFW(20, 8, COLOR(10, 10, 10));\
@@ -78,3 +85,5 @@ typedef struct DMA_REC
     drawString(20, 20, (s), WHITE);\
 } while(0)
 
+
+#endif
