@@ -4,57 +4,46 @@
 # ***** YOUR NAME HERE *****
 ################################################################################
 
-# The name of your desired GBA game
-# This should be a just a name i.e MyFirstGBAGame
 # No SPACES AFTER THE NAME.
 PROGNAME = CoolGame
-SRCDIR = src
-BINDIR = bin
+SRCDIR   = src
+BINDIR   = bin
 
 # The object files you want to compile into your program
-CFILES = $(wildcard $(SRCDIR)/*.c) $(SRCDIR)/bios.c
-
-# The header files you have created.
-HFILES = $(wildcard $(SRCDIR)/*.h)
-################################################################################
-# These are various settings used to make the GBA toolchain work
-# DO NOT EDIT BELOW.
-################################################################################
+CFILES   = $(wildcard $(SRCDIR)/*.c) $(SRCDIR)/bios.c
+HFILES   = $(wildcard $(SRCDIR)/*.h)
 
 TOOLDIR  = /usr/local/cs2110-tools
 ARMLIB   = $(TOOLDIR)/arm-thumb-eabi/lib
 CFLAGS   = -Wall -Werror -std=c99 -pedantic -Wextra
-CFLAGS   += -mthumb-interwork -mlong-calls -nostartfiles -MMD -MP -I $(TOOLDIR)/include
-LDFLAGS = -L $(TOOLDIR)/lib \
-		  -L $(TOOLDIR)/lib/gcc/arm-thumb-eabi/4.4.1/thumb \
-		  -L $(ARMLIB) \
-		  --script $(ARMLIB)/arm-gba.ld
+CFLAGS  += -mthumb-interwork -mlong-calls -nostartfiles -MMD -MP -I $(TOOLDIR)/include
+LDFLAGS  = -L $(TOOLDIR)/lib \
+ 		   -L $(TOOLDIR)/lib/gcc/arm-thumb-eabi/4.4.1/thumb \
+		   -L $(ARMLIB) \
+		   --script $(ARMLIB)/arm-gba.ld
 CDEBUG   = -g -DDEBUG
-CRELEASE = -O2 
+CRELEASE = -O2
 CC       = $(TOOLDIR)/bin/arm-thumb-eabi-gcc
 AS       = $(TOOLDIR)/bin/arm-thumb-eabi-as
 LD       = $(TOOLDIR)/bin/arm-thumb-eabi-ld
 OBJCOPY  = $(TOOLDIR)/bin/arm-thumb-eabi-objcopy
 GDB      = $(TOOLDIR)/bin/arm-thumb-eabi-gdb
 OFILES   = $(CFILES:$(SRCDIR)/%.c=$(BINDIR)/%.o)
-
-################################################################################
-# These are the targets for the GBA build system
-################################################################################
+GAME_ELF = $(BINDIR)/$(PROGNAME).elf
 
 all : CFLAGS += $(CRELEASE)
-all : $(PROGNAME).gba 
+all : $(PROGNAME).gba
 	@echo "[FINISH] Created $(PROGNAME).gba"
 all : vba
 
 .PHONY : all clean mkbin
 
-$(PROGNAME).gba : mkbin $(BINDIR)/$(PROGNAME).elf
+$(PROGNAME).gba : mkbin $(GAME_ELF)
 	@echo "[LINK] Linking objects together to create $(PROGNAME).gba"
-	@$(OBJCOPY) -O binary $(BINDIR)/$(PROGNAME).elf $(PROGNAME).gba
+	@$(OBJCOPY) -O binary $(GAME_ELF) $(PROGNAME).gba
 
-$(BINDIR)/$(PROGNAME).elf : $(BINDIR)/crt0.o $(OFILES)
-	@$(LD) $(LDFLAGS) -o $(BINDIR)/$(PROGNAME).elf $^ -lgcc -lc -lgcc $(LDDEBUG)
+$(GAME_ELF) : $(BINDIR)/crt0.o $(OFILES)
+	@$(LD) $(LDFLAGS) -o $(GAME_ELF) $^ -lgcc -lc -lgcc $(LDDEBUG)
 	@rm -f *.d
 
 $(BINDIR)/crt0.o : $(ARMLIB)/crt0.s
@@ -71,7 +60,7 @@ $(BINDIR)/%.o : $(SRCDIR)/%.s
 
 clean :
 	@echo "[CLEAN] Removing all compiled files"
-	@rm -rf $(BINDIR)
+	@rm -rf $(BINDIR) $(PROGNAME).gba
 
 vba : CFLAGS += $(CRELEASE)
 vba : $(PROGNAME).gba
