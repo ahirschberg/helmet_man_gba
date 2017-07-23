@@ -1,13 +1,13 @@
-#include "myLib.h"
-#include "random.h"
-#include "main.h"
-#include "entities.h"
+#include "../myLib.h"
+#include "../random.h"
+#include "../main.h"
+#include "../entities.h"
 #include "game_state.h"
 #include "game.h"
 #include "difficulty.h"
 
-#include "tile_scroller.h"
-#include "game_over.h"
+#include "../assets/tile_scroller.h"
+#include "../assets/game_over.h"
 
 uint32_t score = 0;
 bool game_ee_mode = FALSE;

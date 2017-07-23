@@ -1,4 +1,4 @@
-#include "myLib.h"
+#include "../myLib.h"
 #include "game_state.h"
 #include "difficulty.h"
 
