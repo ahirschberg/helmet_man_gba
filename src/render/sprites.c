@@ -1,5 +1,5 @@
-#include "myLib.h"
-#include "main.h"
+#include "../myLib.h"
+#include "../main.h"
 #include "sprites.h"
 
 // 8x8 tile, 64 pixels * 4bits/pix = 256. 256 / 8 bytes = 32 bytes. 32bytes / 4 (b/int) = 8 ints / tile

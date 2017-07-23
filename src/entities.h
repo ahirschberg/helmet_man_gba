@@ -1,6 +1,9 @@
-#include "sprites.h"
+#ifndef ENTITIES_H
+#define ENTITIES_H
+
+#include "render/sprites.h"
 #include "random.h"
-#include "gfx_helper.h"
+#include "render/gfx_helper.h"
 
 #define PLAYER_HEIGHT       32
 #define PLAYER_WIDTH        16
@@ -189,3 +192,5 @@ ENTITY allEntities[ENTITIES_LEN];
 extern uint8_t objs_length;
 
 extern OBJ_ATTR _setupObj(const uint32_t id, uint8_t x, uint8_t y, enum ENTITY_TYPE type);
+
+#endif

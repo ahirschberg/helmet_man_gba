@@ -1,17 +1,15 @@
-################################################################################
-# These are variables for the GBA toolchain build
-# You can add others if you wish to
-# ***** YOUR NAME HERE *****
-################################################################################
-
 # No SPACES AFTER THE NAME.
 PROGNAME = CoolGame
 SRCDIR   = src
 BINDIR   = bin
 
+# We use globstar in most places, this list is for mkbin
+# Pending future cleanup?
+SRC_SUBDIRS = assets game render tonc_lib
+
 # The object files you want to compile into your program
-CFILES   = $(wildcard $(SRCDIR)/*.c) $(SRCDIR)/bios.c
-HFILES   = $(wildcard $(SRCDIR)/*.h)
+CFILES   = $(wildcard $(SRCDIR)/*.c) $(wildcard $(SRCDIR)/**/*.c) $(SRCDIR)/bios.c
+HFILES   = $(wildcard $(SRCDIR)/*.h) $(wildcard $(SRCDIR)/**/*.h)
 
 TOOLDIR  = /usr/local/cs2110-tools
 ARMLIB   = $(TOOLDIR)/arm-thumb-eabi/lib
@@ -67,8 +65,10 @@ vba : $(PROGNAME).gba
 	@echo "[EXECUTE] Running Emulator VBA-M"
 	@vbam $(VBAOPT) $(PROGNAME).gba > /dev/null 2> /dev/null
 
+# Create all the necessary subdirectories from src
+# TODO: make this cleaner
 mkbin :
-	@mkdir -p $(BINDIR)
+	$(foreach d,$(SRC_SUBDIRS), mkdir -p $(BINDIR)/$(d);)
 
 med : CFLAGS += $(CRELEASE)
 med : $(PROGNAME).gba

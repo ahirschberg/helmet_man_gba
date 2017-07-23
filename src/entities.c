@@ -1,6 +1,6 @@
 #include "myLib.h"
 #include "entities.h"
-#include "game_state.h"
+#include "game/game_state.h"
 
 ENTITY allEntities[];
 uint8_t objs_length = 0;

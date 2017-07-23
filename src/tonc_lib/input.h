@@ -1,4 +1,7 @@
-// credit tonc: http://www.coranac.com/tonc/text/keys.htm 
+#ifndef INPUT_H
+#define INPUT_H
+
+// credit tonc: http://www.coranac.com/tonc/text/keys.htm
 extern uint16_t __key_curr, __key_prev;
 
 #define REG_KEYINPUT *(volatile uint32_t*)0x4000130
@@ -72,3 +75,5 @@ INLINE tribool key_tri_shoulder()   // R/L : +/-
 
 INLINE tribool key_tri_fire()       // B/A : -/+
 {   return bit_tribool(__key_curr, KI_A, KI_B);         }
+
+#endif

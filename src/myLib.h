@@ -19,7 +19,7 @@ typedef int8_t tribool;
 
 typedef void (*fnptr)(void);
 
-#include "memmap.h"
+#include "tonc_lib/memmap.h"
 
 #define NULL  (void*)0
 #define FALSE 0
@@ -73,7 +73,7 @@ typedef struct DMA_REC
 #define TRIBOOL(a) (a == 0 ? a : (a < 0 ? -1 : 1))
 #define BYTETOWORD(val16) ((val16) << 16 | (val16))
 
-#include "gfx_helper.h"
+#include "render/gfx_helper.h"
 
 #define PUTI(i) do {\
     drawRectFW(20, 8, COLOR(10, 10, 10));\
