@@ -50,6 +50,7 @@ INLINE void tick_entity_anim(ENTITY* e,
             || e->state == RUNNING
             || e->state == HURT) e->lastAnimatedTile+=E_TILES_PER_FRAME;
 }
+
 void tick_animations(ENTITY* e) {
     if (e->type == PLAYER) {
         tick_entity_anim(e,

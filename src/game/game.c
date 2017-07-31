@@ -120,12 +120,12 @@ INLINE ENTITY* addShortEnemy(uint8_t x) {
 
 void spawnEnemies(int roomLevel, int spawn_wave) {
     // Uncomment for a debug fight
-//  if (spawn_wave == 0) {
-//      for (int i = 0; i < 80; ++i) {
-//          addTallEnemy(SWAP_SIDE(1));
-//      }
-//  }
-//  return;
+    if (spawn_wave == 0) {
+        for (int i = 0; i < 80; ++i) {
+            addShortEnemy(SWAP_SIDE(1));
+        }
+    }
+    return;
     switch (roomLevel) {
         case 0:
             if (spawn_wave < 3) addTallEnemy(0);
