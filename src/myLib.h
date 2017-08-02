@@ -76,7 +76,7 @@ typedef struct DMA_REC
 #include "render/gfx_helper.h"
 
 #define PUTI(i) do {\
-    drawRectFW(20, 8, COLOR(10, 10, 10));\
+    drawRectFW(20, 8, BYTETOWORD(COLOR(10, 10, 10)));\
     drawInt(20, 20, (i), 6, WHITE);\
 } while(0)
 
@@ -84,6 +84,13 @@ typedef struct DMA_REC
     drawRectFW(20, 8, COLOR(10, 10, 10));\
     drawString(20, 20, (s), WHITE);\
 } while(0)
+
+// frame timings
+#define each_60th_bitmask(frame_counter, bitmask, salt) ((frame_counter & bitmask) == salt)
+#define each_1_30th(frame_counter, salt) each_60th_bitmask(frame_counter, 1, salt)
+#define each_1_15th(frame_counter, salt) each_60th_bitmask(frame_counter, 3, salt)
+#define each_2_15th(frame_counter, salt) each_60th_bitmask(frame_counter, 7, salt)
+#define each_4_15th(frame_counter, salt) each_60th_bitmask(frame_counter, 0xF, salt)
 
 
 #endif

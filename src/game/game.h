@@ -12,7 +12,4 @@ extern void tickGame(const uint32_t frame);
 void tickEntities(const uint32_t frame);
 extern void setPaused(bool isPaused);
 
-#define SWAP_SIDE(b) ((b & 1) * (SCREEN_WIDTH - 7) + 2)
-#define BRAND() qran_range(0, 2)
-
 #endif

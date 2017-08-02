@@ -1,7 +1,8 @@
 #ifndef DIFFICULTY_H
 #define DIFFICULTY_H
 
-#define Difficulty_shouldTransition(score) score >= Difficulty_points_increase_to_next
+
+#define Difficulty_shouldTransition(score) ((int) score >= (int) Difficulty_points_increase_to_next)
 
 #define DIFFICULTY_NUM_STATES 2
 #define DIFFICULTY_NUM_LEVELS 4
@@ -9,8 +10,7 @@
 
 extern void Difficulty_reset();
 extern void Difficulty_init(const enum GAME_STATE state, const int current_score);
-extern uint8_t Difficulty_points_increase_to_next;
-extern int32_t Difficulty_level; // TODO: make private
+extern uint32_t Difficulty_points_increase_to_next;
 extern void Difficulty_next();
 
 struct RUNNER_CONF {
@@ -22,9 +22,11 @@ struct RUNNER_CONF {
 
 struct SHOOTER_CONF {
     void (*level_cnt)(int spawn_wave_i);
-    int8_t max_objs;
+    uint8_t pts_to_next;
 };
 
 extern const struct RUNNER_CONF* runner_conf;
+extern const struct SHOOTER_CONF* shooter_conf;
+
 
 #endif

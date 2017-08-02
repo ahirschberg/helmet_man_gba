@@ -9,15 +9,15 @@
 #include "../assets/tile_scroller.h"
 #include "../assets/game_over.h"
 
-uint32_t score = 0;
-bool game_ee_mode = FALSE;
-uint8_t hud_mode = 0;
-
-// runner
+uint32_t score;
+bool game_ee_mode;
+bool ee_longTitle;
+uint8_t hud_mode;
 
 void reset() {
     score = 0;
     game_ee_mode = FALSE;
+    ee_longTitle = FALSE;
     hud_mode = 0;
     Difficulty_reset();
 }
@@ -102,60 +102,12 @@ void gameOver() {
 }
 
 int rnum = 0x0;
-uint16_t color = BLACK;
 uint8_t last_player_health = -1;
-bool ee_longTitle = FALSE;
 
-INLINE ENTITY* addTallEnemy(uint8_t x) {
-    register ENTITY* te = addEntity(TALL_ENEMY_STAND_TID, x, GROUND_OFFSET, TALL_ENEMY);
-    te->health = 3;
-    return te;
-}
 
-INLINE ENTITY* addShortEnemy(uint8_t x) {
-    register ENTITY* se = addEntity(SHORT_ENEMY_STAND_TID, x, GROUND_OFFSET, SHORT_ENEMY);
-    se->health = 1;
-    return se;
-}
-
-void spawnEnemies(int roomLevel, int spawn_wave) {
-    // Uncomment for a debug fight
-    if (spawn_wave == 0) {
-        for (int i = 0; i < 80; ++i) {
-            addShortEnemy(SWAP_SIDE(1));
-        }
-    }
+void spawnEnemies(int spawn_wave) {
+    shooter_conf->level_cnt(spawn_wave);
     return;
-    switch (roomLevel) {
-        case 0:
-            if (spawn_wave < 3) addTallEnemy(0);
-            else if (spawn_wave == 4) addShortEnemy(1);
-            else if (spawn_wave < 5) addTallEnemy(SWAP_SIDE(spawn_wave >> 1));
-            else addTallEnemy(SWAP_SIDE(BRAND()));
-            break;
-        case 1:
-            if (spawn_wave & 3) {
-                addShortEnemy(SWAP_SIDE(BRAND()));
-            } else if (spawn_wave & 1){
-                addTallEnemy(SWAP_SIDE(BRAND()));
-            }
-            break;
-        case 2:
-            if (spawn_wave & 1) {
-                for (int i = 0; i < 2; i++) addShortEnemy(0);
-                addTallEnemy(SWAP_SIDE(1));
-            } else {
-                for (int i = 0; i < 3; i++) addShortEnemy(SWAP_SIDE(i));
-            }
-            break;
-        default: // randomize for default
-            ;
-            const int num_enemies = qran_range(1, 5);
-            for (int i = 0; i < num_enemies; i++) {
-                BRAND() ? addShortEnemy(SWAP_SIDE(BRAND())) : addTallEnemy(SWAP_SIDE(BRAND()));
-            }
-            break;
-    }
 }
 
 uint8_t which_rock_tid = 0;
@@ -239,12 +191,12 @@ void tickGame(const uint32_t frame) {
                 Difficulty_next(score);
                 initState(RUNNER_TRANSITION);
             } else {
-                if ((frame & 3) == 0 && PLAYER_ENTITY->health != last_player_health) {
+                if (each_1_15th(frame, 0) && PLAYER_ENTITY->health != last_player_health) {
                     redrawHUD();
                 }
-                if ((frame & 0x7) == 4 && --ENEMY_DATA->ticks_until_next_spawn <= 0 && objs_length < 8) {
-                    ENEMY_DATA->ticks_until_next_spawn = (int)(1.0f / (Difficulty_level + 1) * 30);
-                    spawnEnemies(Difficulty_level / 2, ENEMY_DATA->spawn_wave_id++);
+                if (each_2_15th(frame, 4) && --ENEMY_DATA->ticks_until_next_spawn <= 0 && objs_length < 8) {
+                    ENEMY_DATA->ticks_until_next_spawn = 50;//(int)(1.0f / (Difficulty_level + 1) * 30);
+                    spawnEnemies(ENEMY_DATA->spawn_wave_id++);
                 }
             }
             break;
