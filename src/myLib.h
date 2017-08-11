@@ -25,6 +25,9 @@ typedef void (*fnptr)(void);
 #define FALSE 0
 #define TRUE  1
 
+#define uint32_t_MAX (-1)
+#define int32_t_MAX  (uint32_t_MAX ^ 0x80000000)
+
 #define INLINE static inline
 #define ALIGN4 __attribute__((aligned(4)))
 
@@ -86,11 +89,11 @@ typedef struct DMA_REC
 } while(0)
 
 // frame timings
-#define each_60th_bitmask(frame_counter, bitmask, salt) ((frame_counter & bitmask) == salt)
-#define each_1_30th(frame_counter, salt) each_60th_bitmask(frame_counter, 1, salt)
-#define each_1_15th(frame_counter, salt) each_60th_bitmask(frame_counter, 3, salt)
-#define each_2_15th(frame_counter, salt) each_60th_bitmask(frame_counter, 7, salt)
-#define each_4_15th(frame_counter, salt) each_60th_bitmask(frame_counter, 0xF, salt)
+#define rate_limiter_bitmask(frame_counter, bitmask, salt) ((frame_counter & bitmask) == salt)
+#define each_1_30th(frame_counter, salt) rate_limiter_bitmask(frame_counter, 1, salt)
+#define each_1_15th(frame_counter, salt) rate_limiter_bitmask(frame_counter, 3, salt)
+#define each_2_15th(frame_counter, salt) rate_limiter_bitmask(frame_counter, 7, salt)
+#define each_4_15th(frame_counter, salt) rate_limiter_bitmask(frame_counter, 0xF, salt)
 
 
 #endif

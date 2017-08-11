@@ -173,6 +173,7 @@ void clearEntities(int first_idx) {
         OBJ_ATTR_MEM[i] = NULL_OBJ_ATTR;
     }
     PLAYER_DATA->projectile_count = 0;
+    ENEMY_DATA->num_enemies_alive = 0;
     objs_length = first_idx;
 }
 

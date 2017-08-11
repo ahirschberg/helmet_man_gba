@@ -147,8 +147,8 @@ INLINE void draw()
                     sqran(frameCounter);
                     redrawBG2(70, 8);
 
-                    initState(RUNNER_TRANSITION);
-//                    initState(SHOOTER_TRANSITION);
+//                    initState(RUNNER_TRANSITION);
+                    initState(SHOOTER_TRANSITION);
                 }
                 break;
             case RUNNER:

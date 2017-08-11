@@ -18,15 +18,18 @@ struct RUNNER_CONF {
     int obstacle_spawn_delay_lower;
     int obstacle_spawn_delay_upper;
     int8_t max_objs;
+    uint8_t pts_to_next;
 };
 
 struct SHOOTER_CONF {
     void (*level_cnt)(int spawn_wave_i);
+    uint16_t max_enemies;
     uint8_t pts_to_next;
 };
 
 extern const struct RUNNER_CONF* runner_conf;
 extern const struct SHOOTER_CONF* shooter_conf;
+extern void tick_shooter_level();
 
 
 #endif

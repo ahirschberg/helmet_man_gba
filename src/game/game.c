@@ -5,6 +5,7 @@
 #include "game_state.h"
 #include "game.h"
 #include "difficulty.h"
+#include "difficulty_shooter.h"
 
 #include "../assets/tile_scroller.h"
 #include "../assets/game_over.h"
@@ -33,7 +34,6 @@ enum GAME_STATE paused_lastState = START_SCREEN;
 void setPaused(bool isPaused) {
     if (isPaused) {
         paused_lastState = gameState;
-        initState(PAUSED);
     } else {
         gameState = paused_lastState;
     }
@@ -74,7 +74,6 @@ void initState(const enum GAME_STATE state) {
         case SHOOTER:
             PLAYER_ENTITY->state=STANDING;
             PLAYER_ENTITY->dx = 0;
-            ENEMY_DATA->spawn_wave_id = 0;
             ENEMY_DATA->ticks_until_next_spawn = 10;
             break;
         case GAME_OVER:
@@ -104,12 +103,6 @@ void gameOver() {
 int rnum = 0x0;
 uint8_t last_player_health = -1;
 
-
-void spawnEnemies(int spawn_wave) {
-    shooter_conf->level_cnt(spawn_wave);
-    return;
-}
-
 uint8_t which_rock_tid = 0;
 void tickGame(const uint32_t frame) {
     const uint8_t frame4s = frame & 0xFF;
@@ -124,7 +117,7 @@ void tickGame(const uint32_t frame) {
                 else setJumping(PLAYER_ENTITY, 20);
 
                 if (frame > 60 * 60) {
-                    BF_SET(PLAYER_ENTITY->obj->attr2, 0x1, ATTR2_PALBANK);
+                    BF_SET(PLAYER_ENTITY->obj->attr2, 4, ATTR2_PALBANK);
                 }
 
                 if (qran_range(0, 4) == 0) {
@@ -133,7 +126,7 @@ void tickGame(const uint32_t frame) {
                 rnum = qran_range(0, 0xF);
             } else if (!ee_longTitle && frame4s == rnum) {
                 setJumping(PLAYER_ENTITY, frame / (60 * 5) + 5);
-                if (frame > 60 * 5) {
+                if (frame > 60 * 30) {
                     ee_longTitle = TRUE;
                 }
             }
@@ -194,9 +187,11 @@ void tickGame(const uint32_t frame) {
                 if (each_1_15th(frame, 0) && PLAYER_ENTITY->health != last_player_health) {
                     redrawHUD();
                 }
-                if (each_2_15th(frame, 4) && --ENEMY_DATA->ticks_until_next_spawn <= 0 && objs_length < 8) {
-                    ENEMY_DATA->ticks_until_next_spawn = 50;//(int)(1.0f / (Difficulty_level + 1) * 30);
-                    spawnEnemies(ENEMY_DATA->spawn_wave_id++);
+                if (each_2_15th(frame, 4) && --ENEMY_DATA->ticks_until_next_spawn <= 0) {
+                    tick_shooter_level();
+                    if (ENEMY_DATA->ticks_until_next_spawn == 0) {
+                        //PUTS("warn: level func not setting ticks");
+                    }
                 }
             }
             break;
@@ -307,7 +302,7 @@ INLINE void shooter_checkPlayerCollisions() {
                     // prevent the player from jumping on multiple enemies in the same frame, but still give them the
                     // jump boost
                     if (!player_has_hurt_enemy) {
-                        setDead(allEntities + i);
+                        set_enemy_dead(allEntities + i);
                         score++;
                         player_has_hurt_enemy = TRUE;
                     }
@@ -332,7 +327,7 @@ INLINE void shooter_checkPlayerCollisions() {
                         if (allEntities[i].f_invuln == 0) {
                             const bool killed = hurtEntity(allEntities + i, 1, TRIBOOL(engager_x - ent_x));
                             if (killed) {
-                                setDead(allEntities + i);
+                                set_enemy_dead(allEntities + i);
                                 score++;
                             }
                         }
