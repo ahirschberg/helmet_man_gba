@@ -50,6 +50,7 @@ INLINE void tick_entity_anim(ENTITY* e,
             || e->state == RUNNING
             || e->state == HURT) e->lastAnimatedTile+=E_TILES_PER_FRAME;
 }
+
 void tick_animations(ENTITY* e) {
     if (e->type == PLAYER) {
         tick_entity_anim(e,
@@ -172,6 +173,7 @@ void clearEntities(int first_idx) {
         OBJ_ATTR_MEM[i] = NULL_OBJ_ATTR;
     }
     PLAYER_DATA->projectile_count = 0;
+    ENEMY_DATA->num_enemies_alive = 0;
     objs_length = first_idx;
 }
 

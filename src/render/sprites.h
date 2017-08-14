@@ -71,7 +71,7 @@ typedef struct OBJ_AFFINE
 #define SPRITE_WIDE         1
 #define SPRITE_TALL         2
 
-#define SPRITE_SIZE_SM      0 
+#define SPRITE_SIZE_SM      0
 #define SPRITE_SIZE_MD      1
 #define SPRITE_SIZE_LG      2
 #define SPRITE_SIZE_XL      3

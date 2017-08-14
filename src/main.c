@@ -75,7 +75,7 @@ INLINE void loadAssets() {
     loadPaletteData4(2, tall_enemy_spritesPal, 1);
     loadSpriteData4(TALL_ENEMY_STAND_TID, tall_enemy_spritesTiles, tall_enemy_spritesTilesLen);
 
-    loadPaletteData4(3, tall_enemy_spritesPal, 1);
+    loadPaletteData4(3, short_enemy_spritesPal, 1);
     loadSpriteData4(SHORT_ENEMY_STAND_TID, short_enemy_spritesTiles, short_enemy_spritesTilesLen);
 
     loadPaletteData4(4, obstacle_rocksPal, 1);
@@ -147,8 +147,8 @@ INLINE void draw()
                     sqran(frameCounter);
                     redrawBG2(70, 8);
 
-                    initState(RUNNER_TRANSITION);
-//                    initState(SHOOTER_TRANSITION);
+//                    initState(RUNNER_TRANSITION);
+                    initState(SHOOTER_TRANSITION);
                 }
                 break;
             case RUNNER:

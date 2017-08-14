@@ -9,5 +9,4 @@ struct PLAYER_DATA* PLAYER_DATA = &(struct PLAYER_DATA) {
 struct ENEMY_DATA* ENEMY_DATA = &(struct ENEMY_DATA) {
     .num_enemies_alive = 0,
     .ticks_until_next_spawn = 0,
-    .spawn_wave_id = 0
 };
