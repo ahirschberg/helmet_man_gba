@@ -17,13 +17,12 @@ INLINE void tick_entity_anim(ENTITY* e,
         const int E_TILES_PER_FRAME) {
     if (e->isDead) {
         e->isJumping = FALSE;
-        e->state = WALKING;
         /* if (e->lastAnimatedTile >= E_HURT_LEN) return; // prevent hurt anim from looping */
     }
 
     if (e->state == HURT) {
         if (e->lastAnimatedTile >= E_HURT_LEN) {
-            setStanding(e);
+            setEntityState(e, WALKING);
         } else {
             BF_SET(e->obj->attr2, E_HURT_TID + e->lastAnimatedTile, ATTR2_ID);
         }

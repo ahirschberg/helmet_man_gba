@@ -35,6 +35,7 @@ void tick_shooter_level() {
 
 void set_enemy_dead(ENTITY* e) {
     ENEMY_DATA->num_enemies_alive--;
+    setEntityState(e, HURT);
     setDead(e);
 }
 

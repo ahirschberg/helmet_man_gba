@@ -88,7 +88,7 @@ INLINE void loadAssets() {
     loadSpriteData4(OBSTACLE_SHEET_TID, obstacle_wideTiles, obstacle_wideTilesLen);
 }
 
-INLINE void draw()
+INLINE void run_game()
 {
     ENTITY* playerEntity = PLAYER_ENTITY;
     BF_SET(playerEntity->obj->attr2, 0, ATTR2_PALBANK);
@@ -205,6 +205,12 @@ int main()
     REG_IE |= IRQ_VBLANK;
     REG_IME = 1;
 
+    // quick and dirty splash screen graphic
+    drawRectFW(0, SCREEN_HEIGHT, BYTETOWORD(WHITE));
+    drawString(SCREEN_HEIGHT - 39, 11, "Digital Obsolescence presents", COLOR(26,26,26));
+    drawString(SCREEN_HEIGHT - 40, 10, "Digital Obsolescence presents", BLACK);
     loadAssets();
-    draw();
+    for (int i = 0; i < 90; i++) VBlankIntrWait();
+
+    run_game();
 }

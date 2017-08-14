@@ -1,5 +1,5 @@
 # No SPACES AFTER THE NAME.
-PROGNAME = CoolGame
+PROGNAME = HelmetMan
 SRCDIR   = src
 BINDIR   = bin
 

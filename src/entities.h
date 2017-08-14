@@ -9,8 +9,8 @@
 #define PLAYER_WIDTH        16
 #define OBSTACLE_HEIGHT     16
 #define OBSTACLE_WIDTH      16
-#define PLAYER_TPF          8 
-#define TALL_ENEMY_TPF      8 
+#define PLAYER_TPF          8
+#define TALL_ENEMY_TPF      8
 #define SHORT_ENEMY_TPF     4
 #define PROJECTILE_TPF      1
 
@@ -20,7 +20,7 @@
 #define PLAYER_HURT_LEN     (5 * PLAYER_TPF)
 #define OBSTACLES_LEN       (2 * 4)
 #define TALL_ENEMY_WALK_LEN (5 * TALL_ENEMY_TPF)
-#define TALL_ENEMY_HURT_LEN (5 * TALL_ENEMY_TPF)
+#define TALL_ENEMY_HURT_LEN (3 * TALL_ENEMY_TPF) // Decreased from 5
 #define SHORT_ENEMY_WALK_LEN (5 * SHORT_ENEMY_TPF)
 #define SHORT_ENEMY_HURT_LEN (3 * SHORT_ENEMY_TPF)
 #define SHORT_ENEMY_ATTACK_LEN (6 * SHORT_ENEMY_TPF)
@@ -81,7 +81,7 @@ enum ENTITY_TYPE {
     PLAYER = 0, PROJECTILE, TALL_ENEMY, SHORT_ENEMY, OBSTACLE_ROCK, OBSTACLE_CACTUS, OBSTACLE_SHEET
 };
 
-static const ENTITY_ATTRS entity_attrs[] = { 
+static const ENTITY_ATTRS entity_attrs[] = {
     {PLAYER_HEIGHT, PLAYER_WIDTH, TRUE, SPRITE_TALL, SPRITE_SIZE_LG, .default_palette = 0, .invuln_max_frames = 30},
     {8, 8, FALSE, SPRITE_SQUARE, SPRITE_SIZE_SM, .default_palette = 1},
     {PLAYER_HEIGHT, PLAYER_WIDTH, TRUE, SPRITE_TALL, SPRITE_SIZE_LG, .default_palette = 2, .invuln_max_frames = 1},

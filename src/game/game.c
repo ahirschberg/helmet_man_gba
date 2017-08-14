@@ -138,6 +138,7 @@ void tickGame(const uint32_t frame) {
 
             if (IABS(ENT_X(PLAYER_ENTITY) - 10) < 4) {
                 BF_SET(PLAYER_ENTITY->obj->attr1, 10, ATTR1_X);
+                rnum = 100; // FIXME hack to slow down the obstacles
                 initState(RUNNER);
             }
             break;
