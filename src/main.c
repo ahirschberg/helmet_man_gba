@@ -126,10 +126,12 @@ INLINE void run_game()
 
                 break;
             case START_SCREEN_NODRAW:
+                ;
+                const int start_height = 78;
                 if ((frameCounter & 0x7F) == 0) {
-                    redrawBG2(70, 8);
+                    redrawBG2(start_height, 8);
                 } else if ((frameCounter & 0x7F) == 64) {
-                    drawString(70, 90, "Press Start", WHITE);
+                    drawString(start_height, 90, "Press Start", WHITE);
                 }
                 if (key_hit(konami_ee[ee_next])) {
                     key_last = konami_ee[ee_next];
@@ -145,7 +147,7 @@ INLINE void run_game()
                         BF_SET(playerEntity->obj->attr2, 0xF, ATTR2_PALBANK);
                     }
                     sqran(frameCounter);
-                    redrawBG2(70, 8);
+                    redrawBG2(start_height, 8);
 
 //                    initState(RUNNER_TRANSITION);
                     initState(SHOOTER_TRANSITION);
