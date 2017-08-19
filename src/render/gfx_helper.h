@@ -1,6 +1,8 @@
 #ifndef GFX_HELPER_H
 #define GFX_HELPER_H
 
+#include "../myLib.h"
+
 extern const unsigned char fontdata_6x8[12288];
 
 // FW functions are much faster because they do direct DMA and can do full word transfers

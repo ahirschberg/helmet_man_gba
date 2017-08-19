@@ -9,6 +9,7 @@
 
 #include "../assets/tile_scroller.h"
 #include "../assets/game_over.h"
+#include "../render/game_title.h"
 
 uint32_t score;
 bool game_ee_mode;
@@ -42,15 +43,21 @@ void setPaused(bool isPaused) {
 void initState(const enum GAME_STATE state) {
     PLAYER_ENTITY->f_invuln = 0; // prevent weird things from happening between states
     Difficulty_init(state, score);
+
+    if ((state == RUNNER_TRANSITION || state == SHOOTER_TRANSITION) && gameState == START_SCREEN_NODRAW) {
+        GameTitle_remove_from_background();
+    }
+
     switch(state) {
         case START_SCREEN:
             reset();
             clearEntities(0);
             addEntity(PLAYER_STAND_TID, 110 + 3, GROUND_OFFSET, PLAYER);
             redrawBG2(0, SCREEN_HEIGHT);
+            GameTitle_add_to_background();
+            drawFloor(0);
             break;
         case START_SCREEN_NODRAW:
-            drawFloor(0);
             break;
         case RUNNER_TRANSITION:
             clearEntities(1);
@@ -87,6 +94,7 @@ void initState(const enum GAME_STATE state) {
             drawString(75, sdraw, "Press START!", BLACK);
             drawString(75 + 20, sdraw, "Programmed by Alex Hirschberg", BLACK);
             drawString(75 + 32, sdraw, "Art by Chris Thompson", BLACK);
+            drawString(75 - 44, sdraw, "Fork me on GitHub! goo.gl/ptBHwM", RED);
             PLAYER_ENTITY->dx = 0;
             break;
         default:
@@ -97,7 +105,7 @@ void initState(const enum GAME_STATE state) {
 
 void gameOver() {
     if (!game_ee_mode) initState(GAME_OVER);
-    //else PUTS("Prevented game from ending.");
+    else PUTS("Prevented game from ending.");
 }
 
 int rnum = 0x0;
