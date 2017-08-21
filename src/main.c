@@ -88,7 +88,7 @@ INLINE void loadAssets() {
     loadSpriteData4(OBSTACLE_SHEET_TID, obstacle_wideTiles, obstacle_wideTilesLen);
 }
 
-INLINE void draw()
+INLINE void run_game()
 {
     ENTITY* playerEntity = PLAYER_ENTITY;
     BF_SET(playerEntity->obj->attr2, 0, ATTR2_PALBANK);
@@ -126,10 +126,12 @@ INLINE void draw()
 
                 break;
             case START_SCREEN_NODRAW:
+                ;
+                const int start_height = 78;
                 if ((frameCounter & 0x7F) == 0) {
-                    redrawBG2(70, 8);
+                    redrawBG2(start_height, 8);
                 } else if ((frameCounter & 0x7F) == 64) {
-                    drawString(70, 90, "Press Start", WHITE);
+                    drawString(start_height, 90, "Press Start", WHITE);
                 }
                 if (key_hit(konami_ee[ee_next])) {
                     key_last = konami_ee[ee_next];
@@ -145,7 +147,7 @@ INLINE void draw()
                         BF_SET(playerEntity->obj->attr2, 0xF, ATTR2_PALBANK);
                     }
                     sqran(frameCounter);
-                    redrawBG2(70, 8);
+                    redrawBG2(start_height, 8);
 
 //                    initState(RUNNER_TRANSITION);
                     initState(SHOOTER_TRANSITION);
@@ -205,6 +207,13 @@ int main()
     REG_IE |= IRQ_VBLANK;
     REG_IME = 1;
 
+    // quick and dirty splash screen graphic
+    // TODO move me somewhere else and add a directive to disable when not release
+    drawRectFW(0, SCREEN_HEIGHT, BYTETOWORD(WHITE));
+    drawString(SCREEN_HEIGHT - 22, 6, "Digital Obsolescence presents...", COLOR(26,26,26));
+    drawString(SCREEN_HEIGHT - 23, 5, "Digital Obsolescence presents...", BLACK);
     loadAssets();
-    draw();
+    for (int i = 0; i < 120; i++) VBlankIntrWait();
+
+    run_game();
 }
