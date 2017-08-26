@@ -39,7 +39,7 @@ void set_enemy_dead(ENTITY* e) {
     setDead(e);
 }
 
-inline void set_spawn_delay(int32_t delay) {
+static inline void set_spawn_delay(int32_t delay) {
     ENEMY_DATA->ticks_until_next_spawn = delay;
 }
 

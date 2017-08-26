@@ -20,7 +20,7 @@
 uint32_t frameCounter = 0;
 volatile uint32_t bgColor = BYTETOWORD(WHITE);
 
-void redrawHUDFill(uint32_t color) {
+static inline void redrawHUDFill(uint32_t color) {
     drawRectFW(0, 10, color);
 }
 void redrawBG2(int start, int height) {
@@ -197,6 +197,19 @@ INLINE void run_game()
     } while(1);
 }
 
+const char* splash_text = "Still playing GameBoy in 2017?? \x2";
+const uint16_t colors[] = {COLOR(31, 10, 8), COLOR(7, 20, 7), COLOR(26, 3, 25),
+        COLOR(29, 4, 0), COLOR(5, 15, 30), COLOR(4, 15, 30), COLOR(24, 16, 4),
+        COLOR(15, 8, 17)};
+void draw_splash_screen_back() {
+    drawRectFW(0, SCREEN_HEIGHT, BYTETOWORD(WHITE));
+    drawString(SCREEN_HEIGHT - 22, 6, (char*) splash_text, COLOR(26,26,26));
+}
+void draw_splash_screen(uint16_t color) {
+    // quick and dirty splash screen graphic
+    drawString(SCREEN_HEIGHT - 23, 5, (char*) splash_text, color);
+}
+
 int main()
 {
     REG_DISPCTL = 3 | BG2_ENABLE | DCNT_OBJ | DCNT_OBJ_1D;
@@ -207,13 +220,19 @@ int main()
     REG_IE |= IRQ_VBLANK;
     REG_IME = 1;
 
-    // quick and dirty splash screen graphic
-    // TODO move me somewhere else and add a directive to disable when not release
-    drawRectFW(0, SCREEN_HEIGHT, BYTETOWORD(WHITE));
-    drawString(SCREEN_HEIGHT - 22, 6, "Digital Obsolescence presents...", COLOR(26,26,26));
-    drawString(SCREEN_HEIGHT - 23, 5, "Digital Obsolescence presents...", BLACK);
     loadAssets();
-    for (int i = 0; i < 120; i++) VBlankIntrWait();
+#ifdef RELEASE
+    // only draw splash screen when we are building for release
+    draw_splash_screen_back();
+    uint8_t colors_cur = 0;
+    for (int i = 0; i < 180; i++) {
+        if (each_4_15th(i, 0)) {
+            draw_splash_screen(colors[colors_cur]);
+            colors_cur = (colors_cur + 1) & 0x7;
+        }
+        VBlankIntrWait();
+    }
+#endif
 
     run_game();
 }

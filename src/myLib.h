@@ -64,6 +64,13 @@ typedef struct DMA_REC
 #define DCNT_OBJ    (1<<0xC)
 #define OFFSET(r,c) ((r)*240+(c))
 #define OFFSET3(r,c,w) ((r)*(w)+(c))
+
+typedef struct _COLOR_STRUCT {
+    unsigned int r : 5;
+    unsigned int g : 5;
+    unsigned int b : 5;
+} COLOR_STRUCT;
+
 #define COLOR(r,g,b) ((r) | (g) << 5 | (b) << 10)
 #define RED COLOR(31,0,0)
 #define WHITE COLOR(31,31,31)
