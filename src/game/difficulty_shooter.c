@@ -44,8 +44,22 @@ static inline void set_spawn_delay(int32_t delay) {
 }
 
 static void level0(int wave) {
-    addTallEnemy(SWAP_SIDE(wave & 1));
-    set_spawn_delay(15);
+    if (wave < 2) {
+        addTallEnemy(SWAP_SIDE(wave & 1));
+    } else if (wave == 2) {
+        addShortEnemy(SWAP_SIDE(1));
+        set_spawn_delay(5);
+    } else if (wave == 3) {
+        addTallEnemy(10);
+        set_spawn_delay(20);
+    } else {
+        addTallEnemy(SWAP_SIDE(BRAND()));
+        set_spawn_delay(20);
+    }
+
+    if (wave == 0) {
+        set_spawn_delay(10);
+    }
 }
 
 static void level1(int wave) {
@@ -66,9 +80,9 @@ static void level1(int wave) {
 }*/
 
 const struct SHOOTER_CONF shooter_difficulty_configs[] = {
-    { .level_cnt = level0, .max_enemies = 1, .pts_to_next = 5 },
+    { .level_cnt = level0, .max_enemies = 2, .pts_to_next = 5 },
+    { level1, 3, 10 },
     { level0, 3, 10 },
-    { level1, 2, 10 },
     { level1, 7, 7 },
 };
 
