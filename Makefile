@@ -19,8 +19,8 @@ LDFLAGS  = -L $(TOOLDIR)/lib \
  		   -L $(TOOLDIR)/lib/gcc/arm-thumb-eabi/4.4.1/thumb \
 		   -L $(ARMLIB) \
 		   --script $(ARMLIB)/arm-gba.ld
-CDEBUG   = -g -DDEBUG
-CRELEASE = -O2
+CDEBUG   = -O2 -g -DDEBUG # omitting the O2 makes the HUD tear
+CRELEASE = -O2 -DRELEASE
 CC       = $(TOOLDIR)/bin/arm-thumb-eabi-gcc
 AS       = $(TOOLDIR)/bin/arm-thumb-eabi-as
 LD       = $(TOOLDIR)/bin/arm-thumb-eabi-ld
@@ -29,12 +29,17 @@ GDB      = $(TOOLDIR)/bin/arm-thumb-eabi-gdb
 OFILES   = $(CFILES:$(SRCDIR)/%.c=$(BINDIR)/%.o)
 GAME_ELF = $(BINDIR)/$(PROGNAME).elf
 
-all : CFLAGS += $(CRELEASE)
-all : $(PROGNAME).gba
+all : debug vba
+debug : CFLAGS += $(CDEBUG)
+debug: $(PROGNAME).gba
 	@echo "[FINISH] Created $(PROGNAME).gba"
-all : vba
 
 .PHONY : all clean mkbin
+
+release : CFLAGS += $(CRELEASE)
+release : $(PROGNAME).gba
+	@echo "[FINISH] Created release $(PROGNAME).gba"
+release : vba
 
 $(PROGNAME).gba : mkbin $(GAME_ELF)
 	@echo "[LINK] Linking objects together to create $(PROGNAME).gba"

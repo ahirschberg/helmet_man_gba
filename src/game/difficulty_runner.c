@@ -4,7 +4,7 @@
 #include "difficulty_runner.h"
 
 const struct RUNNER_CONF runner_difficulty_configs[] = {
-        { .scroller_dx = -7, .obstacle_spawn_delay_lower = 85, .obstacle_spawn_delay_upper = 145, .max_objs = 10, .pts_to_next = 10},
+        { .scroller_dx = -7, .obstacle_spawn_delay_lower = 100, .obstacle_spawn_delay_upper = 145, .max_objs = 3, .pts_to_next = 10},
         { .scroller_dx = -7, .obstacle_spawn_delay_lower = 85, .obstacle_spawn_delay_upper = 125, .max_objs = 3, .pts_to_next = 15},
         { -8, 100, 200, 10, 10},
         { -8, 90, 150, 10, 15},

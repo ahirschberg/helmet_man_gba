@@ -94,7 +94,7 @@ void initState(const enum GAME_STATE state) {
             drawString(75, sdraw, "Press START!", BLACK);
             drawString(75 + 20, sdraw, "Programmed by Alex Hirschberg", BLACK);
             drawString(75 + 32, sdraw, "Art by Chris Thompson", BLACK);
-            drawString(75 - 44, sdraw, "Fork me on GitHub! goo.gl/ptBHwM", RED);
+            drawString(75 - 44, sdraw, "Fork me on GitHub! bit.ly/hmgba", RED); // 1 char longer and not custom: goo.gl/ptBHwM
             PLAYER_ENTITY->dx = 0;
             break;
         default:
