@@ -104,9 +104,11 @@ INLINE void run_game()
             drawString(40, 85, "Game paused.", WHITE);
             drawString(42 + 8, 50, "Press SELECT to unpause,", WHITE);
             drawString(42 + 8*2, 50, "or START to reset the game.", WHITE);
+            drawString(42 + 8*3 + 4, 58, "(Press A for build info)", COLOR(15, 15, 15));
         } else {
             while (isPaused) {
                 key_poll();
+                VBlankIntrWait();
 
                 if (key_hit(KEY_SELECT)) {
                     redrawBG2(30, 50);
@@ -115,6 +117,10 @@ INLINE void run_game()
                 } else if (key_hit(KEY_START)) {
                     initState(START_SCREEN);
                     isPaused = FALSE;
+                } else if (key_hit(KEY_A)) {
+                    drawRectFW(30, 50, BYTETOWORD(BLACK));
+                    drawString(42, 30, "I was compiled at " __TIME__, WHITE);
+                    drawString(42 + 9, 30, "on " __DATE__ "!", WHITE);
                 }
             }
         }
@@ -197,7 +203,7 @@ INLINE void run_game()
     } while(1);
 }
 
-const char* splash_text = "Still playing GameBoy in 2017?? \x2";
+const char* splash_text = "Still playing GameBoy in 2018?? \x2";
 const uint16_t colors[] = {COLOR(31, 10, 8), COLOR(7, 20, 7), COLOR(26, 3, 25),
         COLOR(29, 4, 0), COLOR(5, 15, 30), COLOR(4, 15, 30), COLOR(24, 16, 4),
         COLOR(15, 8, 17)};

@@ -3,6 +3,8 @@ The game uses GBA mode 3, which provides bitmapped backgrounds and a sprite obje
 
 I initially made this for a CS2110 homework project, hence the references to the course in the Makefile. However, I've really enjoyed working on this project and so have continued to update the game with additional features I didn't have time to implement in the week and a half I was given on the homework.
 
+## [Play HelmetMan in your browser!](http://ahirs.ch/projects/helmet_man_gba/)
+
 ## Screens:
 
 ![Start screen](http://i.imgur.com/BAm4onC.png)

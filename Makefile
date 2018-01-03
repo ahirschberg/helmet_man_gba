@@ -39,7 +39,6 @@ debug: $(PROGNAME).gba
 release : CFLAGS += $(CRELEASE)
 release : $(PROGNAME).gba
 	@echo "[FINISH] Created release $(PROGNAME).gba"
-release : vba
 
 $(PROGNAME).gba : mkbin $(GAME_ELF)
 	@echo "[LINK] Linking objects together to create $(PROGNAME).gba"
